@@ -12,7 +12,9 @@ There are two main types of sim rig frame; _tubular_ and _profile_ (also known a
 - **Profile rigs** (e.g. [GT Omega Prime](https://www.gtomega.co.uk/products/prime-cockpit)) typically use `40-Series` aluminium extrusion that is bolted together in a modular fashion
 - **Tubular frames** (e.g. [GT Omega Titan](https://www.gtomega.co.uk/products/titan-cockpit)) typically use `2"` steel tubing that is mandrel-bent into shape and welded together
 
-If you have a _profile rig_, choose from the `Corner` or `Flat` profile bracket designs. They support both `30-series` and `40-series` profile.
+If you have a _profile rig_, choose from the `Corner` or `Flat` profile bracket designs. In the latter case:
+- The smaller `30~40mm Hole Spacing` version is suitable for most standard `30-series` and `40-series` profile
+- The larger `50~90mm Hole Spacing` version is intended for larger or more unusual profiles
 
 If you have a _tubular frame_, choose the `Tube` clamp bracket design (which integrates with a commercial [truss clamp](https://www.amazon.co.uk/dp/B07DP1FK33) to attach to the tube).
 
