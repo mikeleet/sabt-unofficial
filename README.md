@@ -12,7 +12,7 @@ It requires **no soldering or programming** and can be built for **as little as 
 
 ## What Is It?
 
-![Pulley Motor](https://github.com/user-attachments/assets/6482c047-358e-4a5b-8aed-ad21be5f4adb)
+[![Introduction Video](https://github.com/user-attachments/assets/536edef6-e577-4989-a92d-927b88d4b97d)](https://youtu.be/b3R1tQvu-o4)
 
 An _active belt tensioner_ is a device that attaches between your sim rig and the anchor points of your racing harness. It dynamically tensions the harness in response to game telemetry; giving a sense of the forces you'd be experencing in a vehicle when changing speed, braking, cornering and jumping/landing.
 
@@ -96,12 +96,6 @@ For comparison, the [QS-BT1](https://qubicsystem.com/product/qs-bt1) claims _"20
 Note that this system conveys progressive constant forces (cornering, braking, etc) rather than fine details (road texture, track kerbs, etc). For the latter, you should install one or more tactile transducers. The two work together to imply the sensation of movement without a costly motion simulator.
 
 [Force Testing.webm](https://github.com/user-attachments/assets/be7b9d7a-be3f-46f7-abf1-9659297854bb)
-
-## Where Can I See It In Action?
-
-[Demonstration](https://github.com/user-attachments/assets/2f8e5eab-6a82-4855-a239-53a57ca60228)
-
-I've posted a number of development videos on my [YouTube profile](https://www.youtube.com/@XGEOX) if you're interested in those details.
 
 ## Anything I Should Be Aware Of?
 
