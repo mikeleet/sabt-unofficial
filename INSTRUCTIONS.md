@@ -161,6 +161,8 @@ If everything is connected correctly, the board will be detected by the SimHub p
 
 ## Adjustment
 
+[![Pulley & USB Port Guidance](https://github.com/user-attachments/assets/b133db7d-114e-4c2f-b4da-042420bd6363)](https://www.youtube.com/watch?v=9At6qqblOZY)
+
 If you already have a harness, you'll be accustomed to tightening it up with the buckles/straps it has. **You don't need to do that with this tensioner**, since it pre-tensions the harness for you (see `Idle Tension` in the `Tension` tab of the plugin).
 
 However when first setting up the tensioner, you'll need to ensure the following:
