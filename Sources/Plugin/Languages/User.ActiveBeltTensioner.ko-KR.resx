@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SABT_Tab_Tuning" xml:space="preserve">
+    <value>튜닝</value>
+  </data>
+  <data name="SABT_Tab_Credits" xml:space="preserve">
+    <value>크레딧</value>
+  </data>
+  <data name="SABT_Title_Connection" xml:space="preserve">
+    <value>상태 및 설정</value>
+  </data>
+  <data name="SABT_Title_Effects" xml:space="preserve">
+    <value>효과 강도 조정</value>
+  </data>
+  <data name="SABT_Title_Tension" xml:space="preserve">
+    <value>벨트 장력 조정</value>
+  </data>
+  <data name="SABT_Title_Tuning" xml:space="preserve">
+    <value>텔레메트리 처리</value>
+  </data>
+  <data name="SABT_Status_Disconnected" xml:space="preserve">
+    <value>연결 해제됨</value>
+  </data>
+  <data name="SABT_Status_CommunicationFailure" xml:space="preserve">
+    <value>통신 실패</value>
+  </data>
+  <data name="SABT_Message_ActivationWarning" xml:space="preserve">
+    <value>벨트 텐셔너 모터가 활성화됩니다. 계속하시겠습니까?</value>
+  </data>
+  <data name="SABT_Message_SimHubLicenseRequired" xml:space="preserve">
+    <value>SimHub가 라이선스되지 않았으므로 텔레메트리 업데이트가 10Hz로 제한됩니다</value>
+  </data>
+  <data name="SABT_Message_Setup_TurnOffPower" xml:space="preserve">
+    <value>이제 모터를 설정합니다. 첫 번째 단계는 텐셔너의 전원을 끄는 것입니다. 완료하셨습니까?</value>
+  </data>
+  <data name="SABT_Message_Setup_Complete" xml:space="preserve">
+    <value>좋습니다. 오른쪽 모터가 구성되었습니다. 이제 두 모터 모두 사용할 준비가 되었습니다...</value>
+  </data>
+  <data name="SABT_Message_Setup_PlugInLeftMotor" xml:space="preserve">
+    <value>이제 왼쪽 모터만 연결해야 합니다. 컨트롤러의 어떤 포트든 사용할 수 있습니다. 연결 후 전원을 켜십시오. 완료하셨습니까?</value>
+  </data>
+  <data name="SABT_Message_Setup_PlugInRightMotor" xml:space="preserve">
+    <value>좋습니다. 왼쪽 모터가 구성되었습니다. 이제 오른쪽 모터를 연결하십시오. 다른 모터는 계속 연결된 상태로 두십시오. 완료하셨습니까?</value>
+  </data>
+  <data name="SABT_Message_Setup_AlreadySetUp" xml:space="preserve">
+    <value>이미 올바르게 설정된 것 같습니다 (두 모터가 모두 연결됨)!</value>
+  </data>
+  <data name="SABT_Message_Setup_FailedToSetLeftMotor" xml:space="preserve">
+    <value>왼쪽 모터의 식별자를 설정하지 못했습니다. 하나의 모터만 연결되고 전원이 공급되는지 확인하십시오</value>
+  </data>
+  <data name="SABT_Message_Setup_FailedToSetRightMotor" xml:space="preserve">
+    <value>오른쪽 모터의 식별자를 설정하지 못했습니다. 두 모터가 모두 연결되고 전원이 공급되는지 확인하십시오</value>
+  </data>
+  <data name="SABT_Message_NoDeviceDetected" xml:space="preserve">
+    <value>장치가 감지되지 않았습니다. 설정을 수행하기 전에 직렬 장치를 선택해야 합니다!</value>
+  </data>
+  <data name="SABT_Message_DeviceFailure" xml:space="preserve">
+    <value>장치를 찾을 수 없거나 모터가 응답하지 않았습니다. '모터 활성화' 옵션이 자동으로 꺼졌습니다</value>
+  </data>
+  <data name="SABT_Plugin" xml:space="preserve">
+    <value>Simple Active Belt Tensioner</value>
+  </data>
+  <data name="SABT_Label_EnableMotors" xml:space="preserve">
+    <value>모터 활성화</value>
+  </data>
+  <data name="SABT_Label_FlipChannels" xml:space="preserve">
+    <value>채널 반전</value>
+  </data>
+  <data name="SABT_Label_StartAutomatically" xml:space="preserve">
+    <value>자동 시작</value>
+  </data>
+  <data name="SABT_Title_Credits" xml:space="preserve">
+    <value>라이선스 및 제작자 정보</value>
+  </data>
+  <data name="SABT_Tab_Tension" xml:space="preserve">
+    <value>장력</value>
+  </data>
+  <data name="SABT_Tab_Effects" xml:space="preserve">
+    <value>효과</value>
+  </data>
+  <data name="SABT_Tab_Connection" xml:space="preserve">
+    <value>연결</value>
+  </data>
+  <data name="SABT_Button_TestMotor" xml:space="preserve">
+    <value>모터 테스트</value>
+  </data>
+  <data name="SABT_Button_SetupMotors" xml:space="preserve">
+    <value>모터 설정</value>
+  </data>
+  <data name="SABT_Label_Connection" xml:space="preserve">
+    <value>• 아래 드롭다운 목록에서 직렬 포트를 선택하십시오. 벨트 텐셔너 장치로 보이는 포트만 표시됩니다. 목록이 비어 있으면 컨트롤러가 연결되어 있는지 확인하십시오. 전원이나 모터가 연결되지 않아도 표시됩니다.
+• 이후 SimHub 실행 시 포트 선택이 기억되고 자동으로 다시 연결됩니다. 그러나 '자동 시작'도 활성화하지 않으면 실행할 때마다 '모터 활성화' 옵션이 재설정됩니다.
+• 처음 설정하는 경우 '모터 설정'을 클릭하고 제공된 지침을 따라야 합니다. 각 모터가 설정을 저장하므로 한 번만 수행하면 됩니다.</value>
+  </data>
+  <data name="SABT_Slider_IdleTension" xml:space="preserve">
+    <value>유휴 장력</value>
+  </data>
+  <data name="SABT_Label_IdleTension" xml:space="preserve">
+    <value>• 주행 중이 아닐 때 항상 적용됨 (주행 중에는 효과 없음)
+• 관성 릴 벨트의 수축 스프링처럼 동작
+• 비활성화하려면 0으로 설정; 최대 모터 토크의 25%로 제한</value>
+  </data>
+  <data name="SABT_Slider_DrivingTension" xml:space="preserve">
+    <value>주행 장력</value>
+  </data>
+  <data name="SABT_Label_DrivingTension" xml:space="preserve">
+    <value>• 주행 중 적용할 최소 및 최대 장력
+• 최소값을 높이면 일정한 장력이 적용되어 가속 및 점프 효과가 향상됨
+• 최대값을 낮추면 전체 장력 강도가 감소함</value>
+  </data>
+  <data name="SABT_Slider_LeftRightBias" xml:space="preserve">
+    <value>좌우 편향</value>
+  </data>
+  <data name="SABT_Label_LeftRightBias" xml:space="preserve">
+    <value>• 양쪽 간 장력이 불균형하게 느껴지면 좌우로 조정하여 해당 쪽으로 편향시킴
+• 이 설정을 사용하기 전에 벨트 경로와 접촉점을 확인하고 수정하십시오</value>
+  </data>
+  <data name="SABT_Slider_Cornering" xml:space="preserve">
+    <value>코너링</value>
+  </data>
+  <data name="SABT_Label_Cornering" xml:space="preserve">
+    <value>• 코너링 힘이 두 벨트 간의 장력 차이에 미치는 영향</value>
+  </data>
+  <data name="SABT_Slider_Braking" xml:space="preserve">
+    <value>제동</value>
+  </data>
+  <data name="SABT_Label_Braking" xml:space="preserve">
+    <value>• 감속 힘이 두 벨트의 장력을 증가시키는 정도</value>
+  </data>
+  <data name="SABT_Legend_Surge" xml:space="preserve">
+    <value>Surge</value>
+  </data>
+  <data name="SABT_Legend_Sway" xml:space="preserve">
+    <value>Sway</value>
+  </data>
+  <data name="SABT_Legend_Heave" xml:space="preserve">
+    <value>Heave</value>
+  </data>
+  <data name="SABT_Slider_Acceleration" xml:space="preserve">
+    <value>가속</value>
+  </data>
+  <data name="SABT_Label_Acceleration" xml:space="preserve">
+    <value>• 가속 힘이 두 벨트의 장력을 감소시키는 정도
+• 최상의 결과를 위해 최소 '주행 장력'을 0이 아닌 값으로 설정하십시오 ('장력' 탭 참조)</value>
+  </data>
+  <data name="SABT_Slider_Jumping" xml:space="preserve">
+    <value>점프</value>
+  </data>
+  <data name="SABT_Label_Jumping" xml:space="preserve">
+    <value>• 점프가 두 벨트의 장력을 감소시키는 정도
+• 최상의 결과를 위해 최소 '주행 장력'을 0이 아닌 값으로 설정하십시오 ('장력' 탭 참조)</value>
+  </data>
+  <data name="SABT_Label_SetMinimumTensionToNonZero" xml:space="preserve">
+    <value>• 최상의 결과를 위해 최소 '주행 장력'을 0이 아닌 값으로 설정하십시오 ('장력' 탭 참조)</value>
+  </data>
+  <data name="SABT_Slider_Landing" xml:space="preserve">
+    <value>착지</value>
+  </data>
+  <data name="SABT_Label_Landing" xml:space="preserve">
+    <value>• 착지가 두 벨트의 장력을 증가시키는 정도</value>
+  </data>
+  <data name="SABT_Slider_Shifting" xml:space="preserve">
+    <value>변속</value>
+  </data>
+  <data name="SABT_Label_Shifting" xml:space="preserve">
+    <value>• 업시프트 시 표준 텔레메트리보다 더 뚜렷한 장력 해제를 추가
+• 최상의 결과를 위해 최소 '주행 장력'을 0이 아닌 값으로 설정하십시오 ('장력' 탭 참조)</value>
+  </data>
+  <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
+    <value>Surge 제한 (가속/제동)</value>
+  </data>
+  <data name="SABT_Slider_SwayLimits" xml:space="preserve">
+    <value>Sway 제한 (코너링)</value>
+  </data>
+  <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
+    <value>Heave 제한 (점프)</value>
+  </data>
+  <data name="SABT_Label_TelemetryLimits" xml:space="preserve">
+    <value>• 수신 텔레메트리의 허용 값 범위 (범위를 벗어나면 잘림)
+• 주로 운전하는 차량 유형에 맞게 적절히 설정하십시오 (기본값은 대부분 적합)
+• 좁은 범위는 더 공격적인 효과, 넓은 범위는 더 섬세한 효과
+• 리플레이를 실행하여 위의 실시간 텔레메트리 그래프를 보고 조정을 쉽게 하십시오</value>
+  </data>
+  <data name="SABT_Slider_SmoothingFactor" xml:space="preserve">
+    <value>스무딩 계수</value>
+  </data>
+  <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
+    <value>• 장력 출력의 스무딩 정도</value>
+  </data>
+  <data name="SABT_Link_Website" xml:space="preserve">
+    <value>웹사이트</value>
+  </data>
+  <data name="SABT_Link_Email" xml:space="preserve">
+    <value>이메일</value>
+  </data>
+  <data name="SABT_Link_GitHubProfile" xml:space="preserve">
+    <value>GitHub 프로필</value>
+  </data>
+  <data name="SABT_Link_ProjectLicense" xml:space="preserve">
+    <value>프로젝트 라이선스</value>
+  </data>
+  <data name="SABT_Text_SimHub" xml:space="preserve">
+    <value>SHWotever의 'SimHub Plugin Demo' 기반 SimHub 플러그인:</value>
+  </data>
+  <data name="SABT_Link_SDKDocumentation" xml:space="preserve">
+    <value>SDK 문서</value>
+  </data>
+  <data name="SABT_Text_Tester" xml:space="preserve">
+    <value>TurtleMenace의 출시 전 테스트 및 피드백:</value>
+  </data>
+  <data name="SABT_Text_Repository" xml:space="preserve">
+    <value>자세한 정보, 버그 신고 또는 기여는 프로젝트 GitHub 저장소를 참조하십시오:</value>
+  </data>
+  <data name="SABT_Link_GitHubRepository" xml:space="preserve">
+    <value>GitHub 저장소</value>
+  </data>
+  <data name="SABT_Text_Designer" xml:space="preserve">
+    <value>George Wilkins의 하드웨어 및 소프트웨어 디자인:</value>
+  </data>
+  <data name="SABT_Status_Connected" xml:space="preserve">
+    <value>연결됨</value>
+  </data>
+  <data name="SABT_Status_NoDeviceDetected" xml:space="preserve">
+    <value>장치 감지 안 됨</value>
+  </data>
+  <data name="SABT_Status_Connecting" xml:space="preserve">
+    <value>연결 중...</value>
+  </data>
+  <data name="SABT_Status_AwaitingConnection" xml:space="preserve">
+    <value>연결 대기 중...</value>
+  </data>
+  <data name="SABT_Status_CheckingMode" xml:space="preserve">
+    <value>모드 확인 중...</value>
+  </data>
+  <data name="SABT_Status_SettingMode" xml:space="preserve">
+    <value>모드 설정 중...</value>
+  </data>
+  <data name="SABT_Status_IdentifierSet" xml:space="preserve">
+    <value>식별자 설정됨 (연결됨)</value>
+  </data>
+  <data name="SABT_Status_SettingIdentifier" xml:space="preserve">
+    <value>식별자 설정 중</value>
+  </data>
+  <data name="SABT_Status_TestPassed" xml:space="preserve">
+    <value>테스트 통과</value>
+  </data>
+  <data name="SABT_Status_TestFailed" xml:space="preserve">
+    <value>테스트 실패</value>
+  </data>
+  <data name="SABT_Status_Testing" xml:space="preserve">
+    <value>테스트 중...</value>
+  </data>
+  <data name="SABT_Status_Stopping" xml:space="preserve">
+    <value>정지 중...</value>
+  </data>
+  <data name="SABT_Status_TestPartiallyFailed" xml:space="preserve">
+    <value>테스트 부분 실패</value>
+  </data>
+  <data name="SABT_Status_Reconnecting" xml:space="preserve">
+    <value>재연결 중...</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate" xml:space="preserve">
+    <value>자동 보정</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
+    <value>• 현재 차량의 최대 텔레메트리에 맞게 텐셔너 범위를 자동으로 조정
+• 모든 차량 클래스(F1부터 일반 도로차까지)에서 일관된 벨트 장력 느낌 제공
+• 비활성화 시 아래 Surge/Sway/Heave 제한 슬라이더로 수동 설정</value>
+  </data>
+  <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
+    <value>적응 속도</value>
+  </data>
+  <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
+    <value>• 빠르게: 차량 변경 시 빠르게 적응 (짧은 메모리, ~2초)
+• 느리게: 세션 중 안정적, 최대 힘을 더 오래 기억 (~2분)
+• 중간 위치가 대부분의 경우에 잘 작동합니다</value>
+  </data>
+  <data name="SABT_Label_AutoReconnect" xml:space="preserve">
+    <value>오류 후 자동 재연결</value>
+  </data>
+  <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
+    <value>자동 재연결 지연</value>
+  </data>
+  <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
+    <value>• 모터 오류(예: 역구동 슬립) 후 재연결 시도까지 대기할 초
+• 재연결 성공 시 모터가 자동으로 다시 활성화됨
+• 전원 공급 장치가 역구동에서 복구되는 데 더 오래 걸리는 경우 더 높게 설정</value>
+  </data>
+</root>

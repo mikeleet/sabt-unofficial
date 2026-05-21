@@ -373,4 +373,34 @@
   <data name="SABT_Status_TestPartiallyFailed" xml:space="preserve">
     <value>Test teilweise fehlgeschlagen</value>
   </data>
+  <data name="SABT_Status_Reconnecting" xml:space="preserve">
+    <value>Verbinde erneut...</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate" xml:space="preserve">
+    <value>Auto-Kalibrierung</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
+    <value>• Passt den Spannungsbereich automatisch an die Spitzen-Telemetrie des aktuellen Fahrzeugs an
+• Sorgt für ein konsistentes Gurtgefühl bei allen Fahrzeugklassen (F1 bis Straßenautos)
+• Wenn deaktiviert, die Surge/Sway/Heave-Schieberegler unten manuell einstellen</value>
+  </data>
+  <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
+    <value>Anpassungsgeschwindigkeit</value>
+  </data>
+  <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
+    <value>• Schneller: passt sich schnell beim Fahrzeugwechsel an (kurzer Speicher, ~2 Sek.)
+• Langsamer: stabil während einer Sitzung, speichert Spitzenkräfte länger (~2 Min.)
+• Die mittlere Position funktioniert für die meisten Fälle gut</value>
+  </data>
+  <data name="SABT_Label_AutoReconnect" xml:space="preserve">
+    <value>Auto-Reconnect nach Fehler</value>
+  </data>
+  <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
+    <value>Auto-Reconnect Verzögerung</value>
+  </data>
+  <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
+    <value>• Sekunden bis zum erneuten Verbindungsversuch nach einem Motorfehler (z.B. Rücktreibung)
+• Die Motoren werden automatisch wieder aktiviert, wenn die Verbindung erfolgreich ist
+• Höher einstellen, wenn das Netzteil länger zur Erholung nach Rücktreibung braucht</value>
+  </data>
 </root>

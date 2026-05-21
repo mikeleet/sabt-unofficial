@@ -44,6 +44,17 @@ namespace User.ActiveBeltTensioner
         private volatile bool _runControlLoop = false;
         private volatile bool _hasBeenInactive = true;
 
+        private double _adaptivePeakSurge = 0.5;
+        private double _adaptivePeakSway = 0.5;
+        private double _adaptivePeakHeave = 0.5;
+        private double _adaptiveDecayPerFrame = 0.999;
+        private int _lastAdaptiveDecayRate = -1;
+
+        private bool _isReconnecting = false;
+        private DateTime _lastReconnectAttempt = DateTime.MinValue;
+        private static readonly TimeSpan ReconnectCooldown = TimeSpan.FromSeconds(10);
+        private bool _suppressActivationWarning = false;
+
         public struct TelemetrySnapshot
         {
             public double? Surge;
@@ -219,26 +230,34 @@ namespace User.ActiveBeltTensioner
 
                 if (_hasBeenInactive)
                 {
-                    MessageBoxResult result = MessageBoxResult.No;
-
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (_suppressActivationWarning)
                     {
-                        result = MessageBox.Show(
-                            SLoc.GetValue("SABT_Message_ActivationWarning"),
-                            SLoc.GetValue("SABT_Plugin"),
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Warning
-                        );
-                    });
-
-                    if (result != MessageBoxResult.Yes)
-                    {
-                        Settings.IsEnabled = false;
-
-                        continue;
+                        _suppressActivationWarning = false;
+                        _hasBeenInactive = false;
                     }
+                    else
+                    {
+                        MessageBoxResult result = MessageBoxResult.No;
 
-                    _hasBeenInactive = false;
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            result = MessageBox.Show(
+                                SLoc.GetValue("SABT_Message_ActivationWarning"),
+                                SLoc.GetValue("SABT_Plugin"),
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Warning
+                            );
+                        });
+
+                        if (result != MessageBoxResult.Yes)
+                        {
+                            Settings.IsEnabled = false;
+
+                            continue;
+                        }
+
+                        _hasBeenInactive = false;
+                    }
                 }
 
                 try
@@ -268,9 +287,27 @@ namespace User.ActiveBeltTensioner
                     bool isMoving = telemetrySnapshot.Speed > 0.2;
                     bool didUpshift = telemetrySnapshot.DidUpshift;
                     double surge = telemetrySnapshot.Surge ?? 0.0;
-                    double sway = (ConvertToFractionOfRange(telemetrySnapshot.Sway ?? 0.0, minimumSway, maximumSway) * 2.0) - 1.0;
+                    double sway = telemetrySnapshot.Sway ?? 0.0;
                     double heave = telemetrySnapshot.Heave ?? 0.0;
                     double speed = telemetrySnapshot.Speed ?? 0.0;
+
+                    UpdateAdaptiveDecay(Settings);
+
+                    if (Settings.IsAdaptiveNormalizationEnabled)
+                    {
+                        surge = ApplyAdaptiveNormalization(ref _adaptivePeakSurge, surge, _adaptiveDecayPerFrame);
+                        sway = ApplyAdaptiveNormalization(ref _adaptivePeakSway, sway, _adaptiveDecayPerFrame);
+                        heave = ApplyAdaptiveNormalization(ref _adaptivePeakHeave, heave, _adaptiveDecayPerFrame);
+
+                        minimumSurge = -1000;
+                        maximumSurge = 1000;
+                        minimumSway = -1000;
+                        maximumSway = 1000;
+                        minimumHeave = -1000;
+                        maximumHeave = 1000;
+                    }
+
+                    double swayForEffects = (ConvertToFractionOfRange(sway, minimumSway, maximumSway) * 2.0) - 1.0;
 
                     double braking = ConvertToFractionOfRange(surge, 0, maximumSurge);
                     double acceleration = 1.0 - ConvertToFractionOfRange(surge, minimumSurge, 0);
@@ -294,8 +331,8 @@ namespace User.ActiveBeltTensioner
                     decreasingModifierRight = Math.Max(decreasingModifierRight, (jumping * jumpingStrength));
                     increasingModifierLeft = Math.Max(increasingModifierLeft, (landing * landingStrength));
                     increasingModifierRight = Math.Max(increasingModifierRight, (landing * landingStrength));
-                    increasingModifierLeft = Math.Max(increasingModifierLeft, (sway <= 0.0) ? (Math.Abs(sway * corneringStrength)) : 0.0);
-                    increasingModifierRight = Math.Max(increasingModifierRight, (sway > 0.0) ? (Math.Abs(sway * corneringStrength)) : 0.0);
+                    increasingModifierLeft = Math.Max(increasingModifierLeft, (swayForEffects <= 0.0) ? (Math.Abs(swayForEffects * corneringStrength)) : 0.0);
+                    increasingModifierRight = Math.Max(increasingModifierRight, (swayForEffects > 0.0) ? (Math.Abs(swayForEffects * corneringStrength)) : 0.0);
 
                     if (didUpshift && shiftingStrength > 0.0)
                     {
@@ -356,16 +393,7 @@ namespace User.ActiveBeltTensioner
                     {
                         if (!motorController.SetTorques(leftTarget, rightTarget, smoothingFactor))
                         {
-                            Logging.Current.Warn("SABT: Exceeded motor communication failure limit (disabling plugin)");
-
-                            MessageBox.Show(
-                                SLoc.GetValue("SABT_Message_DeviceFailure"),
-                                SLoc.GetValue("SABT_Plugin"),
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Warning
-                            );
-
-                            Settings.IsEnabled = false;
+                            HandleMotorFailure(motorController);
                         }
                     }
                 }
@@ -374,6 +402,109 @@ namespace User.ActiveBeltTensioner
                     Logging.Current.Error("SABT: " + ex.Message);
                 }
             }
+        }
+
+        /// <summary>Handles a motor communication failure by disabling and optionally attempting auto-reconnect</summary>
+        private void HandleMotorFailure(MotorController motorController)
+        {
+            Logging.Current.Warn("SABT: Exceeded motor communication failure limit (disabling plugin)");
+
+            Settings.IsEnabled = false;
+
+            if (!Settings.IsAutoReconnectEnabled)
+            {
+                Logging.Current.Warn("SABT: Auto-reconnect is disabled — motors will remain off");
+                return;
+            }
+
+            if (_isReconnecting)
+            {
+                Logging.Current.Warn("SABT: Auto-reconnect already in progress, skipping");
+                return;
+            }
+
+            TimeSpan sinceLastAttempt = DateTime.UtcNow - _lastReconnectAttempt;
+            if (sinceLastAttempt < ReconnectCooldown)
+            {
+                Logging.Current.Warn("SABT: Auto-reconnect cooldown active (" + (int)sinceLastAttempt.TotalSeconds + "s since last attempt)");
+                return;
+            }
+
+            _isReconnecting = true;
+            _lastReconnectAttempt = DateTime.UtcNow;
+
+            int delaySeconds = Settings.AutoReconnectDelay;
+            Logging.Current.Info("SABT: Scheduling auto-reconnect in " + delaySeconds + " seconds...");
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+
+                    Logging.Current.Info("SABT: Attempting auto-reconnect now...");
+
+                    bool didReconnect = false;
+                    lock (_motorControllerLock)
+                    {
+                        didReconnect = motorController.TryReconnect();
+                    }
+
+                    if (didReconnect)
+                    {
+                        Logging.Current.Info("SABT: Auto-reconnect succeeded — re-enabling motors");
+                        _hasBeenInactive = true;
+                        _suppressActivationWarning = true;
+                        Settings.IsEnabled = true;
+                    }
+                    else
+                    {
+                        Logging.Current.Warn("SABT: Auto-reconnect failed — motors remain disabled");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.Current.Error("SABT: Auto-reconnect error: " + ex.Message);
+                }
+                finally
+                {
+                    _isReconnecting = false;
+                }
+            });
+        }
+
+        /// <summary>Updates the adaptive decay factor if the setting has changed</summary>
+        private void UpdateAdaptiveDecay(DeviceSettings settings)
+        {
+            if (settings.AdaptiveDecayRate == _lastAdaptiveDecayRate)
+            {
+                return;
+            }
+
+            _lastAdaptiveDecayRate = settings.AdaptiveDecayRate;
+
+            double fraction = ConvertToFraction(settings.AdaptiveDecayRate);
+            _adaptiveDecayPerFrame = 0.99999 - fraction * (0.99999 - 0.99);
+        }
+
+        /// <summary>Applies adaptive peak normalization to a raw telemetry value, updating the running peak</summary>
+        /// <returns>The normalized value in range [-1.0, 1.0]</returns>
+        private static double ApplyAdaptiveNormalization(ref double runningPeak, double rawValue, double decayPerFrame)
+        {
+            double absValue = Math.Abs(rawValue);
+            runningPeak = Math.Max(absValue, runningPeak * decayPerFrame);
+
+            if (runningPeak < 0.5)
+            {
+                runningPeak = 0.5;
+            }
+
+            double normalized = rawValue / runningPeak;
+
+            if (normalized < -1.0) { return -1.0; }
+            if (normalized > 1.0) { return 1.0; }
+
+            return normalized;
         }
 
         /// <summary>A task wrapper for the <see cref="ActiveBeltTensioner.DevicePlugin" /> instance, allowing logic in this and other classes to asynchronously execute actions</summary>

@@ -373,4 +373,34 @@
   <data name="SABT_Status_TestPartiallyFailed" xml:space="preserve">
     <value>Test partiellement échoué</value>
   </data>
+  <data name="SABT_Status_Reconnecting" xml:space="preserve">
+    <value>Reconnexion...</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate" xml:space="preserve">
+    <value>Auto-Calibrage</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
+    <value>• Ajuste automatiquement la plage du tendeur à la télémétrie de pointe de la voiture
+• Assure une sensation de tension cohérente pour toutes les classes (F1 aux voitures de route)
+• Désactivé : réglez les curseurs Surge/Sway/Heave ci-dessous manuellement</value>
+  </data>
+  <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
+    <value>Vitesse d'Adaptation</value>
+  </data>
+  <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
+    <value>• Rapide : s'adapte vite en changeant de véhicule (mémoire courte, ~2 sec)
+• Lent : stable pendant une session, mémorise les pics plus longtemps (~2 min)
+• La position médiane convient à la plupart des cas</value>
+  </data>
+  <data name="SABT_Label_AutoReconnect" xml:space="preserve">
+    <value>Auto-Reconnexion Après Échec</value>
+  </data>
+  <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
+    <value>Délai d'Auto-Reconnexion</value>
+  </data>
+  <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
+    <value>• Secondes à attendre avant de tenter une reconnexion après une défaillance moteur
+• Les moteurs se réactiveront automatiquement si la reconnexion réussit
+• Réglez plus haut si votre alimentation met plus de temps à récupérer</value>
+  </data>
 </root>

@@ -312,10 +312,72 @@ namespace User.ActiveBeltTensioner
             }
         }
 
+        private bool _isAdaptiveNormalizationEnabled = false;
+        public bool IsAdaptiveNormalizationEnabled
+        {
+            get { return _isAdaptiveNormalizationEnabled; }
+            set
+            {
+                if (_isAdaptiveNormalizationEnabled != value)
+                {
+                    _isAdaptiveNormalizationEnabled = value;
+                    InvokePropertyChange(nameof(IsAdaptiveNormalizationEnabled));
+                    InvokePropertyChange(nameof(IsStaticRangeEnabled));
+                }
+            }
+        }
+
+        private int _adaptiveDecayRate = 500;
+        public int AdaptiveDecayRate
+        {
+            get { return _adaptiveDecayRate; }
+            set
+            {
+                if (_adaptiveDecayRate != value)
+                {
+                    _adaptiveDecayRate = value;
+                    InvokePropertyChange(nameof(AdaptiveDecayRate));
+                }
+            }
+        }
+
+        private bool _isAutoReconnectEnabled = true;
+        public bool IsAutoReconnectEnabled
+        {
+            get { return _isAutoReconnectEnabled; }
+            set
+            {
+                if (_isAutoReconnectEnabled != value)
+                {
+                    _isAutoReconnectEnabled = value;
+                    InvokePropertyChange(nameof(IsAutoReconnectEnabled));
+                }
+            }
+        }
+
+        private int _autoReconnectDelay = 3;
+        public int AutoReconnectDelay
+        {
+            get { return _autoReconnectDelay; }
+            set
+            {
+                if (_autoReconnectDelay != value)
+                {
+                    _autoReconnectDelay = Math.Max(1, Math.Min(value, 10));
+                    InvokePropertyChange(nameof(AutoReconnectDelay));
+                }
+            }
+        }
+
 
         public bool IsMinimumTensionNonZero
         {
             get { return MinimumTension > 0; }
+        }
+
+        public bool IsStaticRangeEnabled
+        {
+            get { return !IsAdaptiveNormalizationEnabled; }
         }
 
         public bool IsSerialPortValid

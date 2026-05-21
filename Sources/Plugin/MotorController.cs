@@ -423,6 +423,9 @@ namespace User.ActiveBeltTensioner
         private readonly long _motorCommandTicks;
         private long _lastCommandTicks = 0;
 
+        private int _consecutiveDeviceNotFoundCount = 0;
+        private const int MaxConsecutiveDeviceNotFound = 3;
+
         public MotorController(DevicePlugin plugin)
         {
             _plugin = plugin;
@@ -536,7 +539,7 @@ namespace User.ActiveBeltTensioner
                         if (!GetRightMotor().SetIdentifier())
                         {
                             MessageBox.Show(
-                                SLoc.GetValue("SABT_Message_Setup_FailToSetLeftMotor"),
+                                SLoc.GetValue("SABT_Message_Setup_FailedToSetRightMotor"),
                                 SLoc.GetValue("SABT_Plugin"),
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error
@@ -681,6 +684,83 @@ namespace User.ActiveBeltTensioner
             }
 
             EndAction(action);
+        }
+
+        /// <summary>Attempts to re-establish motor communication after a failure, without user interaction</summary>
+        /// <returns>Whether both motors reconnected successfully</returns>
+        public bool TryReconnect()
+        {
+            Logging.Current.Info("SABT: Attempting auto-reconnect...");
+
+            string action = StartAction();
+
+            try
+            {
+                foreach (Motor motor in Motors)
+                {
+                    motor.IsConnected = false;
+                    motor.Status = SLoc.GetValue("SABT_Status_Reconnecting");
+                    motor.Graphic = MotorGraphic.Communicating;
+                }
+
+                if (_serialPort == null || !_serialPort.IsOpen)
+                {
+                    if (!Connect())
+                    {
+                        foreach (Motor motor in Motors)
+                        {
+                            motor.IsConnected = false;
+                            motor.Status = SLoc.GetValue("SABT_Status_CommunicationFailure");
+                            motor.Graphic = MotorGraphic.Error;
+                        }
+
+                        EndAction(action);
+                        return false;
+                    }
+                }
+
+                bool didReconnect = true;
+
+                foreach (Motor motor in Motors)
+                {
+                    motor.IsConnected = false;
+                    motor.Status = SLoc.GetValue("SABT_Status_Reconnecting");
+                    motor.Graphic = MotorGraphic.Communicating;
+
+                    if (!motor.Check())
+                    {
+                        didReconnect = false;
+                    }
+                }
+
+                EndAction(action);
+
+                if (didReconnect)
+                {
+                    Logging.Current.Info("SABT: Auto-reconnect succeeded");
+
+                    foreach (Motor motor in Motors)
+                    {
+                        motor.IsConnected = true;
+                        motor.Status = SLoc.GetValue("SABT_Status_Connected");
+                        motor.Graphic = MotorGraphic.Connected;
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    Logging.Current.Warn("SABT: Auto-reconnect failed");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Current.Error("SABT: Auto-reconnect error: " + ex.Message);
+
+                EndAction(action);
+                return false;
+            }
         }
 
         /// <summary>An alias of <see cref="Disconnect()" /> for the purposes of fulfilling the <see cref="IDisposable" /> interface</summary>
@@ -1006,12 +1086,19 @@ namespace User.ActiveBeltTensioner
 
             if (serialPorts.Length < 1)
             {
-                Disconnect();
+                _consecutiveDeviceNotFoundCount++;
 
-                _plugin.Settings.SerialPort = null;
+                if (_consecutiveDeviceNotFoundCount >= MaxConsecutiveDeviceNotFound)
+                {
+                    Disconnect();
+                    _plugin.Settings.SerialPort = null;
+                    _consecutiveDeviceNotFoundCount = 0;
+                }
 
                 return SerialPorts;
             }
+
+            _consecutiveDeviceNotFoundCount = 0;
 
             if (
                 !string.IsNullOrWhiteSpace(_plugin.Settings.SerialPort) ||

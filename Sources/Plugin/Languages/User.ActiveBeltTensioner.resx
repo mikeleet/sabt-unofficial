@@ -373,4 +373,34 @@
   <data name="SABT_Status_TestPartiallyFailed" xml:space="preserve">
     <value>Test Partially Failed</value>
   </data>
+  <data name="SABT_Status_Reconnecting" xml:space="preserve">
+    <value>Reconnecting...</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate" xml:space="preserve">
+    <value>Auto-Calibrate</value>
+  </data>
+  <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
+    <value>• Automatically adjusts the tensioner range to match the current car's peak telemetry
+• Ensures consistent belt tension feel across all vehicle classes (F1 to road cars)
+• When disabled, use the Surge/Sway/Heave limit sliders below to set ranges manually</value>
+  </data>
+  <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
+    <value>Adaptation Speed</value>
+  </data>
+  <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
+    <value>• Faster: adapts quickly when switching vehicles (short memory, ~2 sec)
+• Slower: stable during a session, remembers peak forces longer (~2 min)
+• Default middle position works well for most cases</value>
+  </data>
+  <data name="SABT_Label_AutoReconnect" xml:space="preserve">
+    <value>Auto-Reconnect After Failure</value>
+  </data>
+  <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
+    <value>Auto-Reconnect Delay</value>
+  </data>
+  <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
+    <value>• Seconds to wait before attempting to reconnect after a motor failure (e.g. back-driving slip)
+• The motors will automatically re-enable if reconnection succeeds
+• Set to a higher value if your power supply takes longer to recover from back-driving</value>
+  </data>
 </root>
