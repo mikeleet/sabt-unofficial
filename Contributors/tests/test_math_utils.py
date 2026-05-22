@@ -46,38 +46,30 @@ def clamp_to(value: float, min_val: float, max_val: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Adaptive peak normalization (from DevicePlugin.ApplyAdaptiveNormalization)
+# Adaptive EMA peak normalization (from DevicePlugin.ApplyAdaptiveNormalization)
 # ---------------------------------------------------------------------------
 
-def apply_adaptive_normalization(running_peak: float, raw_value: float, decay_per_frame: float) -> tuple:
+ADAPTIVE_DECAY = 0.995
+ADAPTIVE_FLOOR = 0.5
+
+
+def apply_adaptive_normalization(running_peak: float, raw_value: float) -> tuple:
     """
-    C# equivalent: ApplyAdaptiveNormalization(ref runningPeak, rawValue, decayPerFrame)
+    C# equivalent: ApplyAdaptiveNormalization(ref runningPeak, rawValue)
     Returns (normalized_value, new_running_peak)
     """
     abs_value = abs(raw_value)
-    running_peak = max(abs_value, running_peak * decay_per_frame)
-
-    if running_peak < 0.5:
-        running_peak = 0.5
+    running_peak = max(abs_value, running_peak * ADAPTIVE_DECAY)
+    if running_peak < ADAPTIVE_FLOOR:
+        running_peak = ADAPTIVE_FLOOR
 
     normalized = raw_value / running_peak
-
     if normalized < -1.0:
         normalized = -1.0
     if normalized > 1.0:
         normalized = 1.0
 
     return normalized, running_peak
-
-
-def compute_decay_factor(adaptive_decay_rate: int) -> float:
-    """
-    C# equivalent: UpdateAdaptiveDecay() logic
-    Converts 0-1000 slider value to a per-frame decay factor.
-    """
-    fraction = convert_to_fraction(adaptive_decay_rate)
-    # 0.99999 at slider=0, 0.99 at slider=1000
-    return 0.99999 - fraction * (0.99999 - 0.99)
 
 
 # ---------------------------------------------------------------------------
@@ -325,91 +317,52 @@ class TestClampTo(unittest.TestCase):
         self.assertEqual(clamp_to(-20, -10, 10), -10)
 
 
-class TestAdaptivePeakNormalization(unittest.TestCase):
-    """Tests for ApplyAdaptiveNormalization()"""
+class TestAdaptiveNormalization(unittest.TestCase):
+    """Tests for ApplyAdaptiveNormalization (EMA peak-based)"""
 
     def test_startup_floor(self):
-        """At startup, floor of 0.5 prevents division blowup"""
-        peak = 0.0
-        norm, peak = apply_adaptive_normalization(peak, 0.1, 0.999)
+        norm, peak = apply_adaptive_normalization(0.0, 0.1)
         self.assertAlmostEqual(norm, 0.2)  # 0.1 / 0.5
-        self.assertAlmostEqual(peak, 0.5)  # floor
+        self.assertAlmostEqual(peak, 0.5)
 
-    def test_peak_tracking(self):
-        """Peak should rise to match new maximum"""
-        peak = 0.5
-        norm, peak = apply_adaptive_normalization(peak, 20.0, 0.999)
-        self.assertAlmostEqual(norm, 1.0)  # 20 / 20
+    def test_peak_tracks_max(self):
+        norm, peak = apply_adaptive_normalization(0.5, 20.0)
+        self.assertAlmostEqual(norm, 1.0)
         self.assertAlmostEqual(peak, 20.0)
 
-    def test_peak_decay(self):
-        """After peak, smaller values cause decay"""
-        peak = 20.0
-        norm, peak = apply_adaptive_normalization(peak, 0.0, 0.99)
+    def test_peak_decays(self):
+        norm, peak = apply_adaptive_normalization(20.0, 0.0)
         self.assertAlmostEqual(norm, 0.0)
-        self.assertAlmostEqual(peak, 19.8)  # 20 * 0.99
+        self.assertAlmostEqual(peak, 19.9)  # 20 * 0.995
 
-    def test_f1_vs_slow_car_normalization(self):
-        """Both should map to full [-1, 1] range"""
-        decay = 0.999
+    def test_f1_vs_slow_car(self):
+        norm, peak = apply_adaptive_normalization(20.0, 15.0)
+        self.assertAlmostEqual(norm, 0.75, places=1)
 
-        # F1 car: 20 m/s^2 surge
-        peak = 20.0
-        norm_f1, peak = apply_adaptive_normalization(peak, 15.0, decay)
-        # peak decays slightly: 20*0.999=19.98, then 15/19.98 ≈ 0.75
-        self.assertAlmostEqual(norm_f1, 0.75, places=1)
-
-        # Slow car: 3 m/s^2 surge
-        peak = 3.0
-        norm_slow, peak = apply_adaptive_normalization(peak, 3.0, decay)
-        self.assertAlmostEqual(norm_slow, 1.0, places=2)
+        norm, peak = apply_adaptive_normalization(3.0, 3.0)
+        self.assertAlmostEqual(norm, 1.0, places=2)
 
     def test_negative_values(self):
-        """Negative values (e.g. acceleration surge) should normalize"""
-        peak = 10.0
-        norm, peak = apply_adaptive_normalization(peak, -8.0, 0.999)
+        norm, peak = apply_adaptive_normalization(10.0, -8.0)
         self.assertAlmostEqual(norm, -0.8, places=1)
 
     def test_clamping(self):
-        """Value exceeding peak should clamp to -1 or +1"""
-        peak = 10.0
-        norm, peak = apply_adaptive_normalization(peak, 15.0, 0.999)
+        norm, peak = apply_adaptive_normalization(10.0, 15.0)
         self.assertEqual(norm, 1.0)
-        self.assertAlmostEqual(peak, 15.0)  # peak updated
+        self.assertAlmostEqual(peak, 15.0)
 
     def test_stable_after_convergence(self):
-        """After convergence, values within peak should be linear"""
-        peak = 10.0
-        norm, peak = apply_adaptive_normalization(peak, 5.0, 0.999)
+        norm, peak = apply_adaptive_normalization(10.0, 5.0)
         self.assertAlmostEqual(norm, 0.5, places=1)
-        self.assertAlmostEqual(peak, 9.99, places=2)
+        self.assertAlmostEqual(peak, 9.95, places=2)
 
+    def test_floor_never_below_half(self):
+        norm, peak = apply_adaptive_normalization(0.3, 0.1)
+        self.assertAlmostEqual(peak, 0.5)
 
-class TestDecayFactor(unittest.TestCase):
-    """Tests for decay factor computation"""
-
-    def test_slider_zero(self):
-        """Slider at 0 = slowest decay (long memory)"""
-        factor = compute_decay_factor(0)
-        self.assertAlmostEqual(factor, 0.99999)
-
-    def test_slider_max(self):
-        """Slider at 1000 = fastest decay"""
-        factor = compute_decay_factor(1000)
-        self.assertAlmostEqual(factor, 0.99)
-
-    def test_slider_mid(self):
-        """Slider at 500 = medium decay"""
-        factor = compute_decay_factor(500)
-        self.assertAlmostEqual(factor, 0.994995)
-
-    def test_monotonic(self):
-        """Higher slider = lower decay factor (faster forgetting)"""
-        prev = compute_decay_factor(0)
-        for i in range(1, 1001, 100):
-            current = compute_decay_factor(i)
-            self.assertLessEqual(current, prev)
-            prev = current
+    def test_exceeding_peak_clamps(self):
+        norm, peak = apply_adaptive_normalization(5.0, 8.0)
+        self.assertEqual(norm, 1.0)
 
 
 class TestEffectComputation(unittest.TestCase):

@@ -125,7 +125,7 @@
     <value>채널 반전</value>
   </data>
   <data name="SABT_Label_StartAutomatically" xml:space="preserve">
-    <value>자동 시작</value>
+    <value>시작 시 모터 활성화</value>
   </data>
   <data name="SABT_Title_Credits" xml:space="preserve">
     <value>라이선스 및 제작자 정보</value>
@@ -225,13 +225,13 @@
 • 최상의 결과를 위해 최소 '주행 장력'을 0이 아닌 값으로 설정하십시오 ('장력' 탭 참조)</value>
   </data>
   <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
-    <value>Surge 제한 (가속/제동)</value>
+    <value>Surge 제한 (m/s²)</value>
   </data>
   <data name="SABT_Slider_SwayLimits" xml:space="preserve">
-    <value>Sway 제한 (코너링)</value>
+    <value>Sway 제한 (m/s²)</value>
   </data>
   <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
-    <value>Heave 제한 (점프)</value>
+    <value>Heave 제한 (m/s²)</value>
   </data>
   <data name="SABT_Label_TelemetryLimits" xml:space="preserve">
     <value>• 수신 텔레메트리의 허용 값 범위 (범위를 벗어나면 잘림)
@@ -243,7 +243,10 @@
     <value>스무딩 계수</value>
   </data>
   <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
-    <value>• 장력 출력의 스무딩 정도</value>
+    <value>• 텐션 출력 스무딩 정도 (0 = 원시/즉시, 750 = 최대 스무딩)
+• 낮은 값은 즉각적인 반응을 제공하지만 급격한 토크 변화로 인해 모터가 역구동될 수 있음 — 떨림이나 짧은 역전 현상 발생
+• 역구동 방지 케이스를 설치하지 않은 경우 모터 떨림/역전 시 스무딩 증가
+• 기본값 300은 보호 케이스가 설치된 대부분의 설정에 적합</value>
   </data>
   <data name="SABT_Link_Website" xml:space="preserve">
     <value>웹사이트</value>
@@ -323,25 +326,44 @@
   <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
     <value>• 현재 차량의 최대 텔레메트리에 맞게 텐셔너 범위를 자동으로 조정
 • 모든 차량 클래스(F1부터 일반 도로차까지)에서 일관된 벨트 장력 느낌 제공
-• 비활성화 시 아래 Surge/Sway/Heave 제한 슬라이더로 수동 설정</value>
+• 이 모드는 더 강한 토크 변화를 생성 — 역구동 방지 케이블 어댑터가 모터 연결 끊김 방지에 강력히 권장됨
+• 어댑터 미설치 시: 스무딩 팩터를 높여 보정(모터 반응이 부드러워짐)</value>
   </data>
   <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
-    <value>적응 속도</value>
+    <value>윈도우 크기</value>
   </data>
   <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
-    <value>• 빠르게: 차량 변경 시 빠르게 적응 (짧은 메모리, ~2초)
-• 느리게: 세션 중 안정적, 최대 힘을 더 오래 기억 (~2분)
-• 중간 위치가 대부분의 경우에 잘 작동합니다</value>
+    <value>• 자동 보정에 사용할 텔레메트리 기록 시간 (0.5초 – 10초)
+• 짧은 윈도우: 차량 변경 시 즉시 적응 (~30 샘플)
+• 긴 윈도우: 랩 전체에서 안정적, 전체 힘 범위 캡처 (~600 샘플)</value>
   </data>
   <data name="SABT_Label_AutoReconnect" xml:space="preserve">
     <value>오류 후 자동 재연결</value>
   </data>
   <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
-    <value>자동 재연결 지연</value>
+    <value>자동 재연결 지연 (s)</value>
   </data>
   <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
-    <value>• 모터 오류(예: 역구동 슬립) 후 재연결 시도까지 대기할 초
-• 재연결 성공 시 모터가 자동으로 다시 활성화됨
-• 전원 공급 장치가 역구동에서 복구되는 데 더 오래 걸리는 경우 더 높게 설정</value>
+    <value>• 모터 오류 후 재연결 시도까지 대기할 초 (0-10초)
+• 0 = 즉시 재연결. 성공 시 모터가 자동으로 다시 활성화됨
+• 10초 쿨다운으로 0 지연에서도 재연결 루프 방지</value>
+  </data>
+  <data name="SABT_Slider_MassageStrength" xml:space="preserve">
+    <value>마사지 강도</value>
+  </data>
+  <data name="SABT_Slider_MassageDuration" xml:space="preserve">
+    <value>마사지 시간 (s)</value>
+  </data>
+  <data name="SABT_Button_MassageChair" xml:space="preserve">
+    <value>마사지 체어</value>
+  </data>
+  <data name="SABT_Label_BackDriveWarning" xml:space="preserve">
+    <value>역구동 방지 케이블 어댑터 없이 부하가 걸리면 모터 연결이 끊어질 수 있습니다. 스무딩 팩터를 높이거나(튜닝 탭) 어댑터를 설치하세요(Printables 참조).</value>
+  </data>
+  <data name="SABT_Label_SuppressActivationWarning" xml:space="preserve">
+    <value>활성화 경고 숨기기:</value>
+  </data>
+  <data name="SABT_Label_CalibrationProgress" xml:space="preserve">
+    <value>보정 진행률</value>
   </data>
 </root>

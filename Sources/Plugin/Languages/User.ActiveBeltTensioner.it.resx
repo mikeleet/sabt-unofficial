@@ -184,7 +184,7 @@
     <value>Inverti canali</value>
   </data>
   <data name="SABT_Label_StartAutomatically" xml:space="preserve">
-    <value>Avvio automatico</value>
+    <value>Attiva motori all'avvio</value>
   </data>
   <data name="SABT_Title_Credits" xml:space="preserve">
     <value>Licenze e informazioni autore</value>
@@ -284,7 +284,13 @@
 • Per risultati migliori, imposta la 'Tensione in guida' minima a un valore diverso da zero (vedi scheda 'Tensione')</value>
   </data>
   <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
-    <value>Limiti surge (Accelerazione/Frenata)</value>
+    <value>Limiti Surge (m/s²)</value>
+  </data>
+  <data name="SABT_Slider_SwayLimits" xml:space="preserve">
+    <value>Limiti Sway (m/s²)</value>
+  </data>
+  <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
+    <value>Limiti Heave (m/s²)</value>
   </data>
   <data name="SABT_Slider_SwayLimits" xml:space="preserve">
     <value>Limiti sway (Curva)</value>
@@ -302,7 +308,10 @@
     <value>Fattore di smoothing</value>
   </data>
   <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
-    <value>• Quanto deve essere smussata l'uscita della tensione</value>
+    <value>• Livello di smussamento della tensione (0 = grezzo/immediato, 750 = massimo smussamento)
+• Valori bassi danno risposta immediata ma bruschi cambi di coppia possono far retroazionare il motore — causando tremolii o brevi inversioni
+• Aumentare lo smussamento in caso di tremolii/inversioni senza la scatola anti-retroazione installata
+• Il valore predefinito 300 funziona per la maggior parte delle configurazioni con la scatola di protezione</value>
   </data>
   <data name="SABT_Link_Website" xml:space="preserve">
     <value>Sito web</value>
@@ -382,25 +391,44 @@
   <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
     <value>• Regola automaticamente la gamma del tenditore alla telemetria di picco dell'auto
 • Garantisce una sensazione di tensione costante per tutte le classi (dalla F1 alle auto stradali)
-• Disattivato: regola i cursori Surge/Sway/Heave qui sotto manualmente</value>
+• Questa modalit produce variazioni di coppia pi forti — l'adattatore cavo anti-retroazione  fortemente raccomandato per prevenire disconnessioni del motore
+• Senza adattatore: aumenta il livellamento (la risposta del motore sar pi morbida)</value>
   </data>
   <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
-    <value>Velocità di Adattamento</value>
+    <value>Dimensione Finestra</value>
   </data>
   <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
-    <value>• Veloce: si adatta rapidamente al cambio auto (memoria breve, ~2 sec)
-• Lento: stabile durante una sessione, ricorda i picchi più a lungo (~2 min)
-• La posizione centrale funziona bene nella maggior parte dei casi</value>
+    <value>• Secondi di cronologia telemetrica per l'auto-calibrazione (0,5s – 10s)
+• Finestra breve: si adatta subito al cambio auto (~30 campioni)
+• Finestra lunga: stabile su un giro, cattura la gamma completa di forze (~600 campioni)</value>
   </data>
   <data name="SABT_Label_AutoReconnect" xml:space="preserve">
     <value>Auto-Riconnessione Dopo Errore</value>
   </data>
   <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
-    <value>Ritardo Auto-Riconnessione</value>
+    <value>Ritardo Auto-Riconnessione (s)</value>
   </data>
   <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
-    <value>• Secondi di attesa prima di tentare la riconnessione dopo un guasto al motore
-• I motori si riattiveranno automaticamente se la riconnessione ha successo
-• Impostare più alto se l'alimentatore impiega più tempo a riprendersi</value>
+    <value>• Secondi di attesa prima di tentare la riconnessione dopo un guasto motore (0-10s)
+• 0 = riconnessione immediata. I motori si riattiveranno automaticamente in caso di successo
+• Un timeout di 10 secondi previene cicli di riconnessione anche a 0 ritardo</value>
   </data>
-</root></root>
+  <data name="SABT_Slider_MassageStrength" xml:space="preserve">
+    <value>Forza del Massaggio</value>
+  </data>
+  <data name="SABT_Slider_MassageDuration" xml:space="preserve">
+    <value>Durata Massaggio (s)</value>
+  </data>
+  <data name="SABT_Button_MassageChair" xml:space="preserve">
+    <value>Poltrona Massaggiante</value>
+  </data>
+  <data name="SABT_Label_BackDriveWarning" xml:space="preserve">
+    <value>Senza l'adattatore cavo anti-retroazione, i motori potrebbero disconnettersi sotto carico. Aumenta il livellamento (scheda Tuning) o installa l'adattatore (vedi Printables).</value>
+  </data>
+  <data name="SABT_Label_SuppressActivationWarning" xml:space="preserve">
+    <value>Sopprimi avviso di attivazione:</value>
+  </data>
+  <data name="SABT_Label_CalibrationProgress" xml:space="preserve">
+    <value>Progresso della Calibrazione</value>
+  </data>
+</root>

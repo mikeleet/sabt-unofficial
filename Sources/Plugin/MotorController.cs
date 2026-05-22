@@ -249,6 +249,10 @@ namespace User.ActiveBeltTensioner
                     torque = (short)((torque != 0) ? 0 : (testTorque * direction * _torqueLimit));
                 }
 
+                // Release motor after test
+                byte[] releaseTx = BuildFrame(Identifier, 0x64, 0, 0);
+                _controller.WriteFrameReadFrame(releaseTx, new byte[10], 20, true, true);
+
                 if (bad > 0)
                 {
                     if (good < 1)
@@ -841,6 +845,15 @@ namespace User.ActiveBeltTensioner
 
                 return name;
             }
+        }
+
+        /// <summary>Runs a motor test wrapped in the action tracker to prevent concurrent serial port access</summary>
+        public bool RunTest(Motor motor, double testTorque = 0.12)
+        {
+            string action = StartAction();
+            bool result = motor.Test(testTorque: testTorque);
+            EndAction(action);
+            return result;
         }
 
         /// <summary>Marks the given action identifier as complete</summary>

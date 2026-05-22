@@ -44,7 +44,7 @@ namespace User.ActiveBeltTensioner
             }
         }
 
-        private bool _startAutomatically = false;
+        private bool _startAutomatically = true;
         public bool StartAutomatically
         {
             get { return _startAutomatically; }
@@ -355,6 +355,48 @@ namespace User.ActiveBeltTensioner
             }
         }
 
+        private bool _suppressActivationWarning = true;
+        public bool SuppressActivationWarning
+        {
+            get { return _suppressActivationWarning; }
+            set
+            {
+                if (_suppressActivationWarning != value)
+                {
+                    _suppressActivationWarning = value;
+                    InvokePropertyChange(nameof(SuppressActivationWarning));
+                }
+            }
+        }
+
+        private int _massageDuration = 5;
+        public int MassageDuration
+        {
+            get { return _massageDuration; }
+            set
+            {
+                if (_massageDuration != value)
+                {
+                    _massageDuration = Math.Max(3, Math.Min(value, 30));
+                    InvokePropertyChange(nameof(MassageDuration));
+                }
+            }
+        }
+
+        private int _massageStrength = 500;
+        public int MassageStrength
+        {
+            get { return _massageStrength; }
+            set
+            {
+                if (_massageStrength != value)
+                {
+                    _massageStrength = Math.Max(100, Math.Min(value, 1000));
+                    InvokePropertyChange(nameof(MassageStrength));
+                }
+            }
+        }
+
         private int _autoReconnectDelay = 3;
         public int AutoReconnectDelay
         {
@@ -363,7 +405,7 @@ namespace User.ActiveBeltTensioner
             {
                 if (_autoReconnectDelay != value)
                 {
-                    _autoReconnectDelay = Math.Max(1, Math.Min(value, 10));
+                    _autoReconnectDelay = Math.Max(0, Math.Min(value, 10));
                     InvokePropertyChange(nameof(AutoReconnectDelay));
                 }
             }

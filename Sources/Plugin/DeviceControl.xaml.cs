@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using WoteverLocalization;
 
@@ -52,7 +54,8 @@ namespace User.ActiveBeltTensioner
             DataContext = new DeviceViewModel(
                 _plugin.Settings,
                 _plugin.MotorController,
-                _plugin.TelemetryGraphModel
+                _plugin.TelemetryGraphModel,
+                _plugin
             );
 
             _plugin.DoWithoutWaiting(
@@ -92,7 +95,8 @@ namespace User.ActiveBeltTensioner
                 {
                     if (!devicePlugin.MotorController.IsBusy)
                     {
-                        devicePlugin.MotorController.GetLeftMotor().Test();
+                        Dispatcher.Invoke(() => PulseImage(LeftMotorImage));
+                        devicePlugin.MotorController.RunTest(devicePlugin.MotorController.GetLeftMotor(), 0.5);
                     }
                 }
             );
@@ -105,10 +109,24 @@ namespace User.ActiveBeltTensioner
                 {
                     if (!devicePlugin.MotorController.IsBusy)
                     {
-                        devicePlugin.MotorController.GetRightMotor().Test();
+                        Dispatcher.Invoke(() => PulseImage(RightMotorImage));
+                        devicePlugin.MotorController.RunTest(devicePlugin.MotorController.GetRightMotor(), 0.5);
                     }
                 }
             );
+        }
+
+        private void PulseImage(System.Windows.Controls.Image image)
+        {
+            DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
+            // 8 pulses at 200ms intervals: 1.0 → 1.15 → 1.0 → 1.15 ...
+            for (int i = 0; i <= 8; i++)
+            {
+                double s = (i % 2 == 0) ? 1.0 : 1.15;
+                anim.KeyFrames.Add(new LinearDoubleKeyFrame(s, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(i * 200))));
+            }
+            ScaleTransform scale = (ScaleTransform)image.RenderTransform;
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, anim);
         }
 
         private void SetupMotors(object sender, RoutedEventArgs e)

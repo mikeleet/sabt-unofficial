@@ -184,7 +184,7 @@
     <value>Kanäle tauschen</value>
   </data>
   <data name="SABT_Label_StartAutomatically" xml:space="preserve">
-    <value>Automatisch starten</value>
+    <value>Motoren beim Start aktivieren</value>
   </data>
   <data name="SABT_Title_Credits" xml:space="preserve">
     <value>Lizenz- und Autoreninformationen</value>
@@ -284,13 +284,13 @@
 • Für beste Ergebnisse die minimale „Fahrspannung“ auf einen Wert ungleich null setzen (siehe Registerkarte „Spannung“)</value>
   </data>
   <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
-    <value>Surge-Grenzen (Beschleunigung/Bremsen)</value>
+    <value>Surge-Grenzen (m/s²)</value>
   </data>
   <data name="SABT_Slider_SwayLimits" xml:space="preserve">
-    <value>Sway-Grenzen (Kurvenfahrt)</value>
+    <value>Sway-Grenzen (m/s²)</value>
   </data>
   <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
-    <value>Heave-Grenzen (Sprünge)</value>
+    <value>Heave-Grenzen (m/s²)</value>
   </data>
   <data name="SABT_Label_TelemetryLimits" xml:space="preserve">
     <value>• Zulässige Wertebereiche für eingehende Telemetrie (alles außerhalb wird abgeschnitten)
@@ -302,7 +302,10 @@
     <value>Glättungsfaktor</value>
   </data>
   <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
-    <value>• Wie stark die Spannungsausgabe geglättet werden soll</value>
+    <value>• Wie stark die Spannungsausgabe geglttet werden soll (0 = roh/sofort, 750 = maximale Glttung)
+• Niedrige Werte erzeugen sofortige Reaktion, aber plötzliche Drehmomentnderungen knnen den Motor rückwärts treiben — was zu Ruckeln oder kurzer Umkehrung führt
+• Glttung erhhen bei Motorzittern/-umkehrung, wenn das Rücktreibungsschutzgehuse NICHT installiert ist
+• Standard 300 funktioniert für die meisten Setups mit Schutzgehuse</value>
   </data>
   <data name="SABT_Link_Website" xml:space="preserve">
     <value>Website</value>
@@ -381,26 +384,45 @@
   </data>
   <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
     <value>• Passt den Spannungsbereich automatisch an die Spitzen-Telemetrie des aktuellen Fahrzeugs an
-• Sorgt für ein konsistentes Gurtgefühl bei allen Fahrzeugklassen (F1 bis Straßenautos)
-• Wenn deaktiviert, die Surge/Sway/Heave-Schieberegler unten manuell einstellen</value>
+• Sorgt fr ein konsistentes Gurtgefhl bei allen Fahrzeugklassen (F1 bis Straenautos)
+• Dieser Modus erzeugt strkere Drehmomentsprnge — der Rcktreibungsschutz-Kabeladapter wird dringend empfohlen, um Motorausflle zu verhindern
+• Ohne Adapter: Glttungsfaktor erhhen (Motoransprache wird sanfter)</value>
   </data>
   <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
-    <value>Anpassungsgeschwindigkeit</value>
+    <value>Fenstergröße</value>
   </data>
   <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
-    <value>• Schneller: passt sich schnell beim Fahrzeugwechsel an (kurzer Speicher, ~2 Sek.)
-• Langsamer: stabil während einer Sitzung, speichert Spitzenkräfte länger (~2 Min.)
-• Die mittlere Position funktioniert für die meisten Fälle gut</value>
+    <value>• Sekunden der Telemetrie-Historie für die Auto-Kalibrierung (0,5s – 10s)
+• Kürzeres Fenster: passt sich sofort beim Fahrzeugwechsel an (~30 Samples)
+• Längeres Fenster: stabil über eine Runde, erfasst volle Kraftspanne (~600 Samples)</value>
   </data>
   <data name="SABT_Label_AutoReconnect" xml:space="preserve">
     <value>Auto-Reconnect nach Fehler</value>
   </data>
   <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
-    <value>Auto-Reconnect Verzögerung</value>
+    <value>Auto-Reconnect Verzögerung (s)</value>
   </data>
   <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
-    <value>• Sekunden bis zum erneuten Verbindungsversuch nach einem Motorfehler (z.B. Rücktreibung)
-• Die Motoren werden automatisch wieder aktiviert, wenn die Verbindung erfolgreich ist
-• Höher einstellen, wenn das Netzteil länger zur Erholung nach Rücktreibung braucht</value>
+    <value>• Sekunden bis zum erneuten Verbindungsversuch nach einem Motorfehler (0-10s)
+• 0 = sofortiger Reconnect. Bei Erfolg werden die Motoren automatisch wieder aktiviert
+• Eine 10-Sekunden-Abkühlphase verhindert Reconnect-Schleifen, selbst bei 0 Verzögerung</value>
+  </data>
+  <data name="SABT_Slider_MassageStrength" xml:space="preserve">
+    <value>Massagestrke</value>
+  </data>
+  <data name="SABT_Slider_MassageDuration" xml:space="preserve">
+    <value>Massagedauer (s)</value>
+  </data>
+  <data name="SABT_Button_MassageChair" xml:space="preserve">
+    <value>Massagesessel</value>
+  </data>
+  <data name="SABT_Label_BackDriveWarning" xml:space="preserve">
+    <value>Ohne den Rcktreibungsschutz-Kabeladapter knnen Motoren unter Last ausfallen. Glttungsfaktor erhhen (Tuning-Tab) oder Adapter installieren (siehe Printables).</value>
+  </data>
+  <data name="SABT_Label_SuppressActivationWarning" xml:space="preserve">
+    <value>Aktivierungswarnung unterdrücken:</value>
+  </data>
+  <data name="SABT_Label_CalibrationProgress" xml:space="preserve">
+    <value>Kalibrierungsfortschritt</value>
   </data>
 </root>

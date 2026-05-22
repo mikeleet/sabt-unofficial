@@ -184,7 +184,7 @@
     <value>Flip Channels</value>
   </data>
   <data name="SABT_Label_StartAutomatically" xml:space="preserve">
-    <value>Start Automatically</value>
+    <value>Enable Motors on Startup</value>
   </data>
   <data name="SABT_Title_Credits" xml:space="preserve">
     <value>Licensing &amp; Author Information</value>
@@ -284,13 +284,13 @@
 • Set minimum 'Driving Tension' to non-zero for best results (see 'Tension' tab)</value>
   </data>
   <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
-    <value>Surge Limits (Acceleration/Braking)</value>
+    <value>Surge Limits (m/s²)</value>
   </data>
   <data name="SABT_Slider_SwayLimits" xml:space="preserve">
-    <value>Sway Limits (Cornering)</value>
+    <value>Sway Limits (m/s²)</value>
   </data>
   <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
-    <value>Heave Limits (Jumps)</value>
+    <value>Heave Limits (m/s²)</value>
   </data>
   <data name="SABT_Label_TelemetryLimits" xml:space="preserve">
     <value>• The permitted value ranges for incoming telemetry (anything more or less will be clipped)
@@ -302,7 +302,11 @@
     <value>Smoothing Factor</value>
   </data>
   <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
-    <value>• How much the tension output should be smoothed</value>
+    <value>• How much the tension output should be smoothed (0 = raw/immediate, 750 = maximum smoothing)
+• Auto-Calibrate produces larger torque swings — if you experience motor jitter, reversal or back-drive with Auto-Calibrate ON, INCREASE this slider
+• Low values: instant response but sudden torque changes can back-drive the motor if the belt snaps back
+• Increase smoothing if you have NOT installed the Back-Driving Protection Case (see Printables)
+• Default 300 works for most setups with the protection case installed</value>
   </data>
   <data name="SABT_Link_Website" xml:space="preserve">
     <value>Website</value>
@@ -382,25 +386,44 @@
   <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
     <value>• Automatically adjusts the tensioner range to match the current car's peak telemetry
 • Ensures consistent belt tension feel across all vehicle classes (F1 to road cars)
-• When disabled, use the Surge/Sway/Heave limit sliders below to set ranges manually</value>
+• This mode produces stronger torque swings — the Back-Driving Protection Cable Adapter is strongly recommended to prevent motor disconnects
+• Without the adapter: increase Smoothing Factor to compensate (motor response will be softer)</value>
   </data>
   <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
-    <value>Adaptation Speed</value>
+    <value>Window Size</value>
   </data>
   <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
-    <value>• Faster: adapts quickly when switching vehicles (short memory, ~2 sec)
-• Slower: stable during a session, remembers peak forces longer (~2 min)
-• Default middle position works well for most cases</value>
+    <value>• How many seconds of telemetry history are used for auto-calibration (0.5s – 10s)
+• Shorter window: adapts instantly when switching cars (e.g. 0.5s = ~30 samples)
+• Longer window: stable across a lap, captures full range of forces (e.g. 10s = ~600 samples)</value>
   </data>
   <data name="SABT_Label_AutoReconnect" xml:space="preserve">
     <value>Auto-Reconnect After Failure</value>
   </data>
   <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
-    <value>Auto-Reconnect Delay</value>
+    <value>Auto-Reconnect Delay (s)</value>
   </data>
   <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
-    <value>• Seconds to wait before attempting to reconnect after a motor failure (e.g. back-driving slip)
-• The motors will automatically re-enable if reconnection succeeds
-• Set to a higher value if your power supply takes longer to recover from back-driving</value>
+    <value>• Seconds to wait before attempting to reconnect after a motor failure (0-10s)
+• 0 = immediate reconnect. The motors will automatically re-enable if reconnection succeeds
+• A 10-second cooldown prevents reconnect loops even at 0 delay</value>
+  </data>
+  <data name="SABT_Slider_MassageStrength" xml:space="preserve">
+    <value>Massage Strength</value>
+  </data>
+  <data name="SABT_Slider_MassageDuration" xml:space="preserve">
+    <value>Massage Duration (s)</value>
+  </data>
+  <data name="SABT_Button_MassageChair" xml:space="preserve">
+    <value>Massage Chair</value>
+  </data>
+  <data name="SABT_Label_BackDriveWarning" xml:space="preserve">
+    <value>Without the Back-Driving Protection Cable Adapter, motors may disconnect under load. Increase Smoothing Factor (Tuning tab) or install the adapter (see Printables).</value>
+  </data>
+  <data name="SABT_Label_SuppressActivationWarning" xml:space="preserve">
+    <value>Suppress Activation Warning:</value>
+  </data>
+  <data name="SABT_Label_CalibrationProgress" xml:space="preserve">
+    <value>Calibration Progress</value>
   </data>
 </root>

@@ -184,7 +184,7 @@
     <value>Inverser les canaux</value>
   </data>
   <data name="SABT_Label_StartAutomatically" xml:space="preserve">
-    <value>Démarrer automatiquement</value>
+    <value>Activer les moteurs au dmarrage</value>
   </data>
   <data name="SABT_Title_Credits" xml:space="preserve">
     <value>Licence et informations auteur</value>
@@ -284,13 +284,13 @@
 • Pour de meilleurs résultats, définissez la « Tension en conduite » minimale à une valeur non nulle (voir onglet « Tension »)</value>
   </data>
   <data name="SABT_Slider_SurgeLimits" xml:space="preserve">
-    <value>Limites Surge (Accélération/Freinage)</value>
+    <value>Limites Surge (m/s²)</value>
   </data>
   <data name="SABT_Slider_SwayLimits" xml:space="preserve">
-    <value>Limites Sway (Virage)</value>
+    <value>Limites Sway (m/s²)</value>
   </data>
   <data name="SABT_Slider_HeaveLimits" xml:space="preserve">
-    <value>Limites Heave (Sauts)</value>
+    <value>Limites Heave (m/s²)</value>
   </data>
   <data name="SABT_Label_TelemetryLimits" xml:space="preserve">
     <value>• Plages autorisées pour la télémétrie entrante (les valeurs hors plage seront limitées)
@@ -302,7 +302,10 @@
     <value>Facteur de lissage</value>
   </data>
   <data name="SABT_Label_SmoothingFactor" xml:space="preserve">
-    <value>• Intensité du lissage appliqué à la tension de sortie</value>
+    <value>• Lissage de la tension de sortie (0 = brut/immédiat, 750 = lissage maximal)
+• Les valeurs basses donnent une réponse instantanée mais les changements brusques de couple peuvent entraîner le moteur en arrière — provoquant des secousses ou une brève inversion
+• Augmentez le lissage en cas de secousses/inversion si le boîtier anti-retour n'est PAS installé
+• 300 par défaut convient à la plupart des installations avec le boîtier de protection</value>
   </data>
   <data name="SABT_Link_Website" xml:space="preserve">
     <value>Site web</value>
@@ -382,25 +385,44 @@
   <data name="SABT_Label_AutoCalibrate_Description" xml:space="preserve">
     <value>• Ajuste automatiquement la plage du tendeur à la télémétrie de pointe de la voiture
 • Assure une sensation de tension cohérente pour toutes les classes (F1 aux voitures de route)
-• Désactivé : réglez les curseurs Surge/Sway/Heave ci-dessous manuellement</value>
+• Ce mode produit des variations de couple plus fortes — l'adaptateur de câble anti-retour est fortement recommandé pour éviter les déconnexions moteur
+• Sans adaptateur : augmentez le lissage (la réponse moteur sera plus douce)</value>
   </data>
   <data name="SABT_Slider_AdaptationSpeed" xml:space="preserve">
-    <value>Vitesse d'Adaptation</value>
+    <value>Taille de la Fenêtre</value>
   </data>
   <data name="SABT_Label_AdaptationSpeed_Description" xml:space="preserve">
-    <value>• Rapide : s'adapte vite en changeant de véhicule (mémoire courte, ~2 sec)
-• Lent : stable pendant une session, mémorise les pics plus longtemps (~2 min)
-• La position médiane convient à la plupart des cas</value>
+    <value>• Secondes d'historique télémétrique pour l'auto-calibrage (0,5s – 10s)
+• Fenêtre courte : s'adapte instantanément au changement de véhicule (~30 échantillons)
+• Fenêtre longue : stable sur un tour, capture la pleine gamme de forces (~600 échantillons)</value>
   </data>
   <data name="SABT_Label_AutoReconnect" xml:space="preserve">
     <value>Auto-Reconnexion Après Échec</value>
   </data>
   <data name="SABT_Slider_AutoReconnectDelay" xml:space="preserve">
-    <value>Délai d'Auto-Reconnexion</value>
+    <value>Délai d'Auto-Reconnexion (s)</value>
   </data>
   <data name="SABT_Label_AutoReconnectDelay_Description" xml:space="preserve">
-    <value>• Secondes à attendre avant de tenter une reconnexion après une défaillance moteur
-• Les moteurs se réactiveront automatiquement si la reconnexion réussit
-• Réglez plus haut si votre alimentation met plus de temps à récupérer</value>
+    <value>• Secondes à attendre avant une tentative de reconnexion après une panne moteur (0-10s)
+• 0 = reconnexion immédiate. Les moteurs se réactiveront automatiquement si elle réussit
+• Un délai de 10 secondes empêche les boucles de reconnexion même à 0 de délai</value>
+  </data>
+  <data name="SABT_Slider_MassageStrength" xml:space="preserve">
+    <value>Force du Massage</value>
+  </data>
+  <data name="SABT_Slider_MassageDuration" xml:space="preserve">
+    <value>Durée du Massage (s)</value>
+  </data>
+  <data name="SABT_Button_MassageChair" xml:space="preserve">
+    <value>Fauteuil Massant</value>
+  </data>
+  <data name="SABT_Label_BackDriveWarning" xml:space="preserve">
+    <value>Sans l'adaptateur de cble anti-retour, les moteurs peuvent se dconnecter sous charge. Augmentez le lissage (onglet Tuning) ou installez l'adaptateur (voir Printables).</value>
+  </data>
+  <data name="SABT_Label_SuppressActivationWarning" xml:space="preserve">
+    <value>Supprimer l'avertissement d'activation:</value>
+  </data>
+  <data name="SABT_Label_CalibrationProgress" xml:space="preserve">
+    <value>Progression de l'Étalonnage</value>
   </data>
 </root>

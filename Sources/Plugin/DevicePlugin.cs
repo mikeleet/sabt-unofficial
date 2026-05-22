@@ -44,16 +44,17 @@ namespace User.ActiveBeltTensioner
         private volatile bool _runControlLoop = false;
         private volatile bool _hasBeenInactive = true;
 
+        private const double AdaptiveDecay = 0.995;
+        private const double AdaptiveFloor = 0.5;
         private double _adaptivePeakSurge = 0.5;
         private double _adaptivePeakSway = 0.5;
         private double _adaptivePeakHeave = 0.5;
-        private double _adaptiveDecayPerFrame = 0.999;
-        private int _lastAdaptiveDecayRate = -1;
 
         private bool _isReconnecting = false;
         private DateTime _lastReconnectAttempt = DateTime.MinValue;
         private static readonly TimeSpan ReconnectCooldown = TimeSpan.FromSeconds(10);
         private bool _suppressActivationWarning = false;
+        private bool _hasShownBackDriveHelp = false;
 
         public struct TelemetrySnapshot
         {
@@ -140,6 +141,16 @@ namespace User.ActiveBeltTensioner
             {
                 UpdateTelemetryGraphThresholds(Settings);
             }
+
+            if (e.PropertyName == nameof(Settings.IsAdaptiveNormalizationEnabled))
+            {
+                if (Settings.IsAdaptiveNormalizationEnabled)
+                {
+                    _adaptivePeakSurge = 0.5;
+                    _adaptivePeakSway = 0.5;
+                    _adaptivePeakHeave = 0.5;
+                }
+            }
         }
 
         /// <summary>Called by SimHub when new telemetry data is available</summary>
@@ -168,7 +179,7 @@ namespace User.ActiveBeltTensioner
 
             _hasTelemetryArrived.Set();
 
-            if (telemetrySnapshot.IsActive) {
+            if (telemetrySnapshot.IsActive && !_isGraphPaused) {
 
                 UpdateTelemetryGraph(
                     telemetrySnapshot.Surge ?? 0,
@@ -230,7 +241,7 @@ namespace User.ActiveBeltTensioner
 
                 if (_hasBeenInactive)
                 {
-                    if (_suppressActivationWarning)
+                    if (_suppressActivationWarning || Settings.SuppressActivationWarning)
                     {
                         _suppressActivationWarning = false;
                         _hasBeenInactive = false;
@@ -291,20 +302,21 @@ namespace User.ActiveBeltTensioner
                     double heave = telemetrySnapshot.Heave ?? 0.0;
                     double speed = telemetrySnapshot.Speed ?? 0.0;
 
-                    UpdateAdaptiveDecay(Settings);
-
                     if (Settings.IsAdaptiveNormalizationEnabled)
                     {
-                        surge = ApplyAdaptiveNormalization(ref _adaptivePeakSurge, surge, _adaptiveDecayPerFrame);
-                        sway = ApplyAdaptiveNormalization(ref _adaptivePeakSway, sway, _adaptiveDecayPerFrame);
-                        heave = ApplyAdaptiveNormalization(ref _adaptivePeakHeave, heave, _adaptiveDecayPerFrame);
+                        surge = ApplyAdaptiveNormalization(ref _adaptivePeakSurge, surge);
+                        sway = ApplyAdaptiveNormalization(ref _adaptivePeakSway, sway);
+                        heave = ApplyAdaptiveNormalization(ref _adaptivePeakHeave, heave);
 
-                        minimumSurge = -1000;
-                        maximumSurge = 1000;
-                        minimumSway = -1000;
-                        maximumSway = 1000;
-                        minimumHeave = -1000;
-                        maximumHeave = 1000;
+                        minimumSurge = -1; maximumSurge = 1;
+                        minimumSway = -1; maximumSway = 1;
+                        minimumHeave = -1; maximumHeave = 1;
+                    }
+                    else
+                    {
+                        _adaptivePeakSurge = 0.5;
+                        _adaptivePeakSway = 0.5;
+                        _adaptivePeakHeave = 0.5;
                     }
 
                     double swayForEffects = (ConvertToFractionOfRange(sway, minimumSway, maximumSway) * 2.0) - 1.0;
@@ -411,6 +423,24 @@ namespace User.ActiveBeltTensioner
 
             Settings.IsEnabled = false;
 
+            if (!_hasShownBackDriveHelp)
+            {
+                _hasShownBackDriveHelp = true;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(
+                        "Motor communication lost — likely caused by back-driving.\n\n" +
+                        "To prevent this:\n" +
+                        "  • Increase the Smoothing Factor (Tuning tab)\n" +
+                        "  • Install the Back-Driving Protection Case (see Printables)\n\n" +
+                        "The motors will attempt to auto-reconnect up to 3 times if enabled.",
+                        "Simple Active Belt Tensioner",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                });
+            }
+
             if (!Settings.IsAutoReconnectEnabled)
             {
                 Logging.Current.Warn("SABT: Auto-reconnect is disabled — motors will remain off");
@@ -440,14 +470,24 @@ namespace User.ActiveBeltTensioner
             {
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
-
-                    Logging.Current.Info("SABT: Attempting auto-reconnect now...");
-
+                    int maxAttempts = 3;
                     bool didReconnect = false;
-                    lock (_motorControllerLock)
+
+                    for (int attempt = 1; attempt <= maxAttempts && !didReconnect; attempt++)
                     {
-                        didReconnect = motorController.TryReconnect();
+                        await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+
+                        Logging.Current.Info("SABT: Auto-reconnect attempt " + attempt + "/" + maxAttempts + "...");
+
+                        lock (_motorControllerLock)
+                        {
+                            didReconnect = motorController.TryReconnect();
+                        }
+
+                        if (!didReconnect && attempt < maxAttempts)
+                        {
+                            Logging.Current.Warn("SABT: Attempt " + attempt + " failed, retrying in " + delaySeconds + "s...");
+                        }
                     }
 
                     if (didReconnect)
@@ -459,7 +499,7 @@ namespace User.ActiveBeltTensioner
                     }
                     else
                     {
-                        Logging.Current.Warn("SABT: Auto-reconnect failed — motors remain disabled");
+                        Logging.Current.Warn("SABT: Auto-reconnect failed after " + maxAttempts + " attempts — motors remain disabled");
                     }
                 }
                 catch (Exception ex)
@@ -473,37 +513,17 @@ namespace User.ActiveBeltTensioner
             });
         }
 
-        /// <summary>Updates the adaptive decay factor if the setting has changed</summary>
-        private void UpdateAdaptiveDecay(DeviceSettings settings)
-        {
-            if (settings.AdaptiveDecayRate == _lastAdaptiveDecayRate)
-            {
-                return;
-            }
-
-            _lastAdaptiveDecayRate = settings.AdaptiveDecayRate;
-
-            double fraction = ConvertToFraction(settings.AdaptiveDecayRate);
-            _adaptiveDecayPerFrame = 0.99999 - fraction * (0.99999 - 0.99);
-        }
-
-        /// <summary>Applies adaptive peak normalization to a raw telemetry value, updating the running peak</summary>
+        /// <summary>Applies adaptive EMA-based peak normalization to a raw telemetry value</summary>
         /// <returns>The normalized value in range [-1.0, 1.0]</returns>
-        private static double ApplyAdaptiveNormalization(ref double runningPeak, double rawValue, double decayPerFrame)
+        private static double ApplyAdaptiveNormalization(ref double runningPeak, double rawValue)
         {
             double absValue = Math.Abs(rawValue);
-            runningPeak = Math.Max(absValue, runningPeak * decayPerFrame);
-
-            if (runningPeak < 0.5)
-            {
-                runningPeak = 0.5;
-            }
+            runningPeak = Math.Max(absValue, runningPeak * AdaptiveDecay);
+            if (runningPeak < AdaptiveFloor) runningPeak = AdaptiveFloor;
 
             double normalized = rawValue / runningPeak;
-
-            if (normalized < -1.0) { return -1.0; }
-            if (normalized > 1.0) { return 1.0; }
-
+            if (normalized < -1.0) return -1.0;
+            if (normalized > 1.0) return 1.0;
             return normalized;
         }
 
@@ -542,6 +562,11 @@ namespace User.ActiveBeltTensioner
 
 
         public PlotModel TelemetryGraphModel { get; private set; }
+        public bool IsGraphPaused
+        {
+            get => _isGraphPaused;
+            set => _isGraphPaused = value;
+        }
 
         private LineSeries _surgeSeries;
         private LineSeries _swaySeries;
@@ -555,7 +580,8 @@ namespace User.ActiveBeltTensioner
         private LineAnnotation _heaveMaximumAnnotation;
 
         private int _plotPointIndex = 0;
-        private const int MaxPlotPoints = 200;
+        private const int MaxPlotPoints = 600;
+        private bool _isGraphPaused = false;
 
         private DateTime _lastPlotRefresh = DateTime.MinValue;
         private static readonly TimeSpan PlotRefreshInterval = TimeSpan.FromMilliseconds(33);
@@ -583,8 +609,6 @@ namespace User.ActiveBeltTensioner
                     MinorGridlineStyle = LineStyle.Dot,
                     MinorGridlineColor = grey,
                     TicklineColor = OxyColors.Transparent,
-                    Minimum = -50,
-                    Maximum = 100,
                     IsPanEnabled = false,
                     IsZoomEnabled = false
                 }

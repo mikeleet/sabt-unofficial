@@ -21,6 +21,8 @@
 | BUG-11 | DesignTimeResources condition | Code review | ❌ Not a bug |
 | BUG-12 | Motor disconnect when switching games | [#21](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner/issues/21) | ✅ Fixed |
 | BUG-13 | Activation warning blocks during auto-reconnect | Code review | ✅ Fixed |
+| BUG-14 | Tab bar disappears when switching to Connection/Tuning | User report | ✅ Fixed |
+| BUG-15 | Auto-calibrate "dead quiet" until data gathered | User report | ✅ Fixed |
 
 ---
 
@@ -88,6 +90,17 @@
 - **Fix**: Added `_suppressActivationWarning` flag. Set to `true` by `HandleMotorFailure()` before re-enabling. When set, the ControlLoop skips the activation warning and proceeds directly. Resets after use.
 - **Files**: `DevicePlugin.cs`
 
+### BUG-14: Tab bar disappears when switching to Connection or Tuning tab ✅
+- **What**: The Connection and Tuning tabs had tall content (600px motor graphics, 600px telemetry graph) inside a shared outer ScrollViewer. Scrolling down on one tab, then switching to another, left the ScrollViewer scrolled down — hiding the SHTabControl tab headers at the top. The initial fix (SelectionChanged → ScrollToTop) failed because SimHub's SHTabControl doesn't expose SelectionChanged.
+- **Fix**: Removed the outer ScrollViewer entirely and wrapped each tab's content in its own `<ScrollViewer>`. Tab headers now sit outside any scroll region and are always visible. Each tab independently maintains its own scroll position. Also reduced telemetry graph height from 600px to 250px to make the Tuning tab more compact.
+- **Files**: `DeviceControl.xaml`, `DeviceControl.xaml.cs`
+
+### BUG-15: Auto-calibrate dead quiet until data is gathered ✅
+- **What**: The old `ApplyAdaptiveNormalization` normalized telemetry values to [-1,1] then set static limits to [-1000,1000], causing `ConvertToFractionOfRange` to divide every effect by 1000x — belt was effectively dead. Even without that bug, the single-peak-per-axis model couldn't handle directional asymmetry (e.g., braking stronger than acceleration on the same surge axis).
+- **Fix**: Replaced with a **rolling window** approach (`ComputeWindowBounds`). Three circular buffers (surge, sway, heave, 600 samples each) track recent telemetry. Min/max of the filled window become the adaptive limits for `ConvertToFractionOfRange`. Raw telemetry flows directly into effect math — no separate normalization step. Window starts at 1s (60 samples), automatically grows up to 10s (600 samples) as data accumulates, then rotates oldest data out. Works from frame 1.
+- **Removed**: "Window Size" slider (over-engineering — the difference between 1s and 10s windows is negligible for relative range detection). "Calibration Progress" bar (always fills to 100% within 1 second). `UpdateAdaptiveDecay`, `WindowSamplesFromSetting`, `UpdateWindowSize`, `AdaptiveCalibrationProgress` property.
+- **Files**: `DevicePlugin.cs`, `DeviceSettings.cs`, `DeviceControl.xaml`, `test_math_utils.py`
+
 ---
 
 ## Not Bugs
@@ -102,10 +115,35 @@
 
 ## Completed Features
 
-### Auto-Calibrate (#27)
+### Auto-Calibrate v2 (#27)
 - **Origin**: [#27](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner/issues/27) — F1 cars felt great but slower cars felt weak; telemetry normalization needed
-- Toggle on the Tuning tab. When ON, tracks running peak values per telemetry axis (surge/sway/heave) with exponential decay, normalizing live data so every car gets the full tensioner range. Static Surge/Sway/Heave limit sliders are disabled when active.
-- Settings: checkbox + **Adaptation Speed** slider (0 = slow/memory, 1000 = fast/adaptive). Default: OFF, speed 500.
+- Toggle on the Tuning tab. When ON, uses a rolling window of recent telemetry samples per axis (surge/sway/heave) to dynamically determine the range for normalization. Raw telemetry values are mapped to [0,1] within the observed min/max window. Static Surge/Sway/Heave limit sliders are disabled when active.
+- **Fixed window**: starts at 1 second (60 samples), grows up to 10 seconds (600 samples) as telemetry accumulates. After 10 seconds, old data rotates out as a true rolling window. No user configuration needed — the window sizes itself automatically.
+
+### Physics & Math References
+
+The normalization math uses **min-max feature scaling** (aka min-max normalization):
+- Formula: `x' = (x - min) / (max - min)`
+- Reference: [Wikipedia: Feature Scaling § Rescaling (min-max normalization)](https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization))
+- The rolling-window variant is a standard technique in **sliding window time series analysis**: [Wikipedia: Moving Average](https://en.wikipedia.org/wiki/Moving_average)
+
+The underlying force model follows **Newton's Second Law**: F = m·a, where `a` is the in-game accelerometer (surge/sway/heave in m/s²). The belt tension linearly counteracts the perceived acceleration force. No non-linear transforms are used — the mapping from telemetry to tension is a direct linear interpolation within the observed range.
+
+### Motor Back-EMF & Back-Driving
+
+The DDSM115 BLDC motors use FOC (Field Oriented Control) over RS-485. The plugin applies an **exponential moving average (EMA)** smoothing filter to torque commands: `smoothed = target*(1-α) + previous*α` where `α = smoothingFactor/1000`.
+
+**Why smoothing matters**: When braking force is released suddenly (e.g., coming off the brake pedal), the belt — under tension from the user's body — snaps back against the motor. This external torque can briefly exceed the motor's holding current, causing:
+- **Back-EMF**: The motor acts as a generator, producing a reverse voltage that the controller must absorb
+- **Rotor slip**: The FOC controller's PID loop momentarily loses sync with the rotor position
+- **Controller fault**: The DDSM115 may interpret the back-EMF as a fault condition and briefly cut power
+
+The **Back-Driving Protection Case** (in Printables) mechanically limits how far the belt can pull the motor in reverse, reducing the peak back-EMF. Users without this hardware should use higher smoothing (450–750) to soften torque transitions and prevent the controller from faulting.
+
+**References**:
+- Back-EMF in BLDC motors: [Wikipedia: Counter-electromotive force](https://en.wikipedia.org/wiki/Counter-electromotive_force)
+- FOC torque ripple during load transients: Krishnan, R. "Permanent Magnet Synchronous and Brushless DC Motor Drives" (CRC Press, 2010), Chapter 9
+- EMA filter for motor control: standard digital signal processing technique; the smoothing uses the same formula as a first-order IIR low-pass filter
 
 ### Auto-Reconnect After Motor Failure
 - Motor failure disables motors without a blocking popup. After a configurable delay (1-10 seconds), attempts background reconnection. Auto-re-enables if successful. 10-second cooldown prevents reconnect loops.
@@ -113,6 +151,14 @@
 
 ### Korean Translation
 - Complete `ko-KR.resx` with all UI strings translated.
+
+### UI Polish & Quality-of-Life
+- **Suppress Activation Warning** toggle on Connection tab (defaults ON). Disables the "motors will be activated. Proceed?" popup every time you flick Enable. The internal `_suppressActivationWarning` flag still works for auto-reconnect suppression.
+- **Slider units** added: Surge/Sway/Heave Limits now show `(m/s²)`. Auto-Reconnect Delay shows `(s)`.
+- **Smoothing Factor description** rewritten with back-EMF/back-driving warning: explains that low smoothing + no protection case = motor jitter/reversal risk. References the Back-Driving Protection Case in Printables.
+- **Test Motor always uses full torque** (1.0 = 100%). Previously hardcoded at 12% torque — invisible when idle tension was 0. Now pulses the motor image opacity to show torque level visually during the test.
+- **Test Motor**: full 50% torque with ScaleY pulse animation synced to each test pull/release (8 cycles × 200ms). Uses `RunTest()` wrapper for serial port safety — prevents concurrent test calls on the shared bus.
+- **Test Motor** shows live torque-level animation: motor image pulses in scale synced to each test pull/release (8 cycles × 200ms). Always uses 100% torque.
 
 ---
 

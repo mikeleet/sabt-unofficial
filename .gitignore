@@ -1,0 +1,10 @@
+# Build outputs
+Sources/Plugin/bin/
+Sources/Plugin/obj/
+
+# NuGet
+Sources/Plugin/packages/
+Sources/Plugin/nuget.exe
+
+# Backups
+Sources/Plugin/backups/

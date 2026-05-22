@@ -14,17 +14,9 @@
     d:DataContext="{d:DesignInstance Type=local:DeviceViewModel}"
     mc:Ignorable="d"
 >
-    <ScrollViewer>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="0*" />
-            </Grid.ColumnDefinitions>
-
-            <StackPanel>
-
-                <styles:SHTabControl>
+    <styles:SHTabControl>
                     <styles:SHTabItem Header="{SLoc SABT_Tab_Connection}">
+                        <ScrollViewer>
                         <styles:SHTitledGroup Title="{SLoc SABT_Title_Connection}">
                             <StackPanel>
 
@@ -38,6 +30,8 @@
                                             <styles:SHToggleCheckbox IsChecked="{Binding Settings.IsFlipped, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             <Label Content="{SLoc SABT_Label_AutoReconnect}" Margin="-5,0,0,0" />
                                             <styles:SHToggleCheckbox IsChecked="{Binding Settings.IsAutoReconnectEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <Label Content="{SLoc SABT_Label_SuppressActivationWarning}" Margin="-5,0,0,0" />
+                                            <styles:SHToggleCheckbox IsChecked="{Binding Settings.SuppressActivationWarning, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     </TextBlock>
                                 </StackPanel>
 
@@ -58,14 +52,16 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding MotorController.LeftMotorGraphic}" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5">
+                                    <Image x:Name="LeftMotorImage" Grid.Column="0" Grid.Row="0" Source="{Binding MotorController.LeftMotorGraphic}" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5">
                                         <Image.RenderTransform>
                                             <ScaleTransform ScaleX="1"/>
                                         </Image.RenderTransform>
                                     </Image>
-                                    <Image Grid.Column="1" Grid.Row="0" Source="{Binding MotorController.RightMotorGraphic}" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
+                                    <Image x:Name="RightMotorImage" Grid.Column="1" Grid.Row="0" Source="{Binding MotorController.RightMotorGraphic}" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
                                         <Image.RenderTransform>
                                             <ScaleTransform ScaleX="-1"/>
                                         </Image.RenderTransform>
@@ -85,15 +81,19 @@
 
                                     <styles:SHButtonPrimary Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Click="SetupMotors" Margin="0,0,0,0" IsEnabled="{Binding Settings.IsSerialPortValid}" Content="{SLoc SABT_Button_SetupMotors}" />
 
-                                    <ui:TitledSlider Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" Title="{SLoc SABT_Slider_AutoReconnectDelay}" Maximum="10" Minimum="1" Value="{Binding Settings.AutoReconnectDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Settings.IsAutoReconnectEnabled}" Margin="0,10,0,0" />
+                                    <ui:TitledSlider Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" Title="{SLoc SABT_Slider_AutoReconnectDelay}" Maximum="10" Minimum="0" Value="{Binding Settings.AutoReconnectDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Settings.IsAutoReconnectEnabled}" Margin="0,10,0,0" />
                                     <TextBlock Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" LineHeight="20" TextWrapping="WrapWithOverflow" Margin="5,0,0,15" Text="{SLoc SABT_Label_AutoReconnectDelay_Description}" />
+
+                                    <TextBlock Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2" LineHeight="20" TextWrapping="WrapWithOverflow" Margin="2,5,2,0" Foreground="#E07050" Text="{SLoc SABT_Label_BackDriveWarning}" />
 
                                 </Grid>
 
                             </StackPanel>
                         </styles:SHTitledGroup>
+                        </ScrollViewer>
                     </styles:SHTabItem>
                     <styles:SHTabItem Header="{SLoc SABT_Tab_Tension}">
+                        <ScrollViewer>
                         <styles:SHTitledGroup Title="{SLoc SABT_Title_Tension}">
                             <StackPanel>
 
@@ -112,8 +112,10 @@
 
                             </StackPanel>
                         </styles:SHTitledGroup>
+                        </ScrollViewer>
                     </styles:SHTabItem>
                     <styles:SHTabItem Header="{SLoc SABT_Tab_Effects}">
+                        <ScrollViewer>
                         <styles:SHTitledGroup Title="{SLoc SABT_Title_Effects}">
                             <StackPanel>
 
@@ -146,12 +148,19 @@
 
                             </StackPanel>
                         </styles:SHTitledGroup>
+                        </ScrollViewer>
                     </styles:SHTabItem>
                     <styles:SHTabItem Header="{SLoc SABT_Tab_Tuning}">
+                        <ScrollViewer>
                         <styles:SHTitledGroup Title="{SLoc SABT_Title_Tuning}">
                             <StackPanel>
 
-                                <oxy:PlotView Height="600" HorizontalAlignment="Stretch" Margin="-14,-10,-14,15" Background="#202020" Model="{Binding TelemetryGraphModel}" />
+                                <oxy:PlotView Height="250" HorizontalAlignment="Stretch" Margin="-14,-10,-14,5" Background="#202020" Model="{Binding TelemetryGraphModel}" />
+
+                                <TextBlock Margin="5,0,0,5">
+                                    <Label Content="Pause Graph" Margin="-5,0,0,0" />
+                                    <styles:SHToggleCheckbox IsChecked="{Binding Plugin.IsGraphPaused, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </TextBlock>
 
                                 <ui:TitledRangeSlider Title="{SLoc SABT_Slider_SurgeLimits}" Maximum="50" Minimum="-50" LowerValue="{Binding Settings.MinimumSurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" UpperValue="{Binding Settings.MaximumSurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Settings.IsStaticRangeEnabled}" />
                                 <ui:TitledRangeSlider Title="{SLoc SABT_Slider_SwayLimits}" Maximum="50" Minimum="-50" LowerValue="{Binding Settings.MinimumSway, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" UpperValue="{Binding Settings.MaximumSway, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Settings.IsStaticRangeEnabled}" />
@@ -167,9 +176,6 @@
                                 </TextBlock>
                                 <TextBlock LineHeight="20" TextWrapping="WrapWithOverflow" Margin="5,0,0,5" Text="{SLoc SABT_Label_AutoCalibrate_Description}" />
 
-                                <ui:TitledSlider Title="{SLoc SABT_Slider_AdaptationSpeed}" Maximum="1000" Minimum="0" Value="{Binding Settings.AdaptiveDecayRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Settings.IsAdaptiveNormalizationEnabled}" />
-                                <TextBlock LineHeight="20" TextWrapping="WrapWithOverflow" Margin="5,0,0,5" Text="{SLoc SABT_Label_AdaptationSpeed_Description}" />
-
                                 <styles:SHSectionSeparator />
 
                                 <ui:TitledSlider Title="{SLoc SABT_Slider_SmoothingFactor}" Maximum="750" Minimum="0" Value="{Binding Settings.SmoothingFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -177,8 +183,10 @@
 
                             </StackPanel>
                         </styles:SHTitledGroup>
+                        </ScrollViewer>
                     </styles:SHTabItem>
                     <styles:SHTabItem Header="{SLoc SABT_Tab_Credits}">
+                        <ScrollViewer>
                         <styles:SHTitledGroup Title="{SLoc SABT_Title_Credits}">
                             <StackPanel>
 
@@ -217,11 +225,8 @@
 
                             </StackPanel>
                         </styles:SHTitledGroup>
+                        </ScrollViewer>
                     </styles:SHTabItem>
                 </styles:SHTabControl>
 
-
-            </StackPanel>
-        </Grid>
-    </ScrollViewer>
 </UserControl>
