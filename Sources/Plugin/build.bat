@@ -273,15 +273,17 @@ echo   3. Check the log window for: SABT: Initialising...
 echo   4. If this is a first-time setup, click "Setup Motors"
 echo.
 echo   New features in this build:
-echo   - Massage Chair button (Connection tab) - for fun!
-echo   - Test Motor: full torque + visual animation
-echo   - Auto-Calibrate v2: rolling window (1s-10s, no config needed)
-echo   - Suppress Activation Warning toggle (default ON, Connection tab)
+echo   - Auto-Calibrate v2: EMA peak tracking (frame-1 response)
+echo   - Test Motor: 50%% torque, zero-torque release, serial safety
+echo   - Suppress Activation Warning + Enable Motors on Startup
 echo   - Tab bar always visible (per-tab scroll, compact graph)
-echo   - Smoother motor control (back-EMF info in Smoothing label)
+echo   - Back-drive cable adapter warnings (Connection + Tuning tabs)
+echo   - Back-drive help popup on motor failure (once per session)
+echo   - Auto-reconnect: 3 retries, 0s minimum delay
+echo   - Graph: Y-axis auto-scale, 600-point history, pause toggle
 echo   - Slider units: m/s^2 for limits, seconds for reconnect
+echo   - Smoothing Factor info: back-EMF guidance
 echo   - Korean + German + French + Italian translations
-echo   - Auto-Reconnect after failure (Connection tab)
 echo   - Game-switching reliability fix
 echo.
 echo ============================================
