@@ -1,6 +1,6 @@
 # Software — Unofficial Fork
 
-This folder contains a pre-built plugin package for the **unofficial fork** of SABT.
+This folder contains a pre-built plugin package for the **unofficial fork** of SABT, based on upstream [`acaa1ed`](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner/commit/acaa1ed8a63a3292b84fe2fddc7ce95b841bfaa1).
 
 ## Download & Install
 

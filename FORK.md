@@ -2,6 +2,8 @@
 
 This is an **unofficial fork** of the [Simple Active Belt Tensioner](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner) by George Wilkins.
 
+**Based on upstream:** [`acaa1ed`](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner/commit/acaa1ed8a63a3292b84fe2fddc7ce95b841bfaa1) — PR [#26](https://github.com/GeorgeWilkins/Simple-Active-Belt-Tensioner/pull/26) (Extra Tall motor brackets) — May 2026
+
 ## What's Different
 
 This branch contains bug fixes, quality-of-life improvements, and experimental features not yet merged upstream. These changes are **actively used** on a real rig and validated with hardware.
